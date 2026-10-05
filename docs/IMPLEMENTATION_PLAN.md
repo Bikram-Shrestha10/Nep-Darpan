@@ -108,11 +108,11 @@ Optional provider choices must not block independent frontend work. Keep depende
 
 ### Task 1.6 — Build newsroom screens as frontend prototypes
 
-- **Build:** Implement responsive sign-in shell, story list/detail/editor forms, review queue, preview, scheduling controls, correction form, media selection/upload UI states, and permission-denied states with fixtures only. Clearly mark that actions are non-persistent prototypes.
-- **Test:** Component/browser tests cover form validation, unsaved changes, review/publish state displays, denied/loading/error states, keyboard operation, and narrow screens.
-- **Review:** Editor validates workflow screens and terms; technical/security reviewer confirms the UI does not imply frontend-only authorization will be sufficient.
-- **Verify:** Walk through draft-to-review-to-preview using prototype controls; refresh and confirm the UI clearly communicates that mock changes are not persisted.
-- **Exit:** Newsroom interface and interaction requirements are reviewed before server authorization and persistence are added.
+- **Build:** Added responsive sign-in, stories list/detail/editor, review queue, same-session preview, scheduling controls, correction form, local media selection/upload states, and permission-denied/loading/error screens. All newsroom pages use explicitly fictional fixtures; persistent notices explain that authentication, authorization, database saves, publication, and Cloudinary uploads are not connected. New draft state is held in memory and clears on refresh.
+- **Test:** `npm run check` passed Biome lint/format, strict TypeScript, 39 Vitest tests across 7 files, and the production build. Browser workflow verified a draft enters the review queue, approval appears in preview, and reload clears the draft. All 10 newsroom routes returned HTTP 200 at 320, 375, 820, and 1440 px with no horizontal overflow or browser JavaScript errors. Axe WCAG 2.1 A/AA scans found no violations on all 10 routes at 375 px. `npm audit --audit-level=high` found 0 vulnerabilities; `git diff --check` passed.
+- **Review:** Reviewed all newsroom route and component changes against the frontend contract. Confirmed sign-in and denied pages explicitly state they do not enforce access, review actions do not publish stories, corrections do not alter public articles, and selected media files are not uploaded. No database, Redis, Cloudinary credentials, or live services are referenced. Editorial sign-off remains appropriate before the newsroom workflow is approved for real use.
+- **Verify:** Exercised editor → review → approval → preview in Edge at 375×812; verified the title and approval label carried across routes and a refresh displayed the “draft not in memory” state. Checked 10 routes across phone, tablet, and desktop widths; no overflow/errors, and each page rendered its main heading and prototype disclosure. Axe found no A/AA issues; keyboard-native form controls and navigation remain operable.
+- **Exit:** Newsroom interface and prototype interactions are implemented and verified as frontend-only. Actual authentication, server-side authorization, persistence, publication, and media upload remain Phase 2 work. Await explicit user approval before Task 1.7.
 
 ### Task 1.7 — Frontend quality gate and API contract freeze
 
@@ -241,4 +241,4 @@ These features are outside initial launch unless product scope is explicitly cha
 
 ## 10. Current status and next step
 
-Phase 0 and Tasks 1.1–1.5 are complete. The application serves the Nepali-first responsive reader pages and URL-backed search using fictional fixtures. The next task is Task 1.6: newsroom screen prototypes; wait for explicit user approval before beginning it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
+Phase 0 and Tasks 1.1–1.6 are complete. The application serves Nepali-first responsive reader pages, URL-backed search, and frontend-only newsroom prototypes using fictional fixtures. Await explicit user approval before Task 1.7, the frontend quality gate and API contract freeze. Docker, PostgreSQL, Redis, authentication, and Cloudinary integration remain deferred to the backend phases. Every implementation task requires its own test, review, and verification before the next begins.
