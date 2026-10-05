@@ -9,7 +9,7 @@ export const primaryNavigation = [
   { href: "/category/society", label: "समाज" },
   { href: "/category/world", label: "विश्व" },
   { href: "/category/technology", label: "प्रविधि" },
-  { href: "/opinion", label: "विचार" },
+  { href: "/category/opinion", label: "विचार" },
   { href: "/information-hub", label: "जानकारी केन्द्र" },
 ] as const;
 

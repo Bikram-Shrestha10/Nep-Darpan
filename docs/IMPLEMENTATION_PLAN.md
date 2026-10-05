@@ -92,11 +92,11 @@ Optional provider choices must not block independent frontend work. Keep depende
 
 ### Task 1.4 — Build public pages with mock content
 
-- **Build:** Implement home, topic/category, article, explainer/guide, and fact-check pages. Include editor-curated lead/latest/trending fixtures, author and timestamp, correction history presentation, related reporting, and responsive media. Render core content on the server from fixtures.
-- **Test:** Add route/component/browser tests for page states, locale availability, missing content, correction display, labels, and not-found behavior.
-- **Review:** Newsroom/design review information hierarchy and trust signals; accessibility review headings, landmarks, links, image alternatives, and reading order.
-- **Verify:** Browse representative pages at phone/tablet/desktop widths; disable JavaScript or inspect initial HTML to verify primary story text is present.
-- **Exit:** All approved public page types are navigable, responsive, and populated only with clearly fictional fixtures.
+- **Build:** Added the editorial homepage, latest feed, all navigation category routes, localized article routes, information-hub index, and explainer/guide/fact-check detail pages. Expanded the typed mock gateway with editor-curated lead/latest/trending/section data, metadata, corrections, safe source attribution, related stories, and hub review dates. Core content is server rendered; each public page has a persistent fictional-content notice. The fact-check fixture has no verdict or real claim. English stays unavailable until reviewed translations exist.
+- **Test:** `npm run check` passed Biome lint and formatting, strict TypeScript, 24 Vitest tests, and Next.js production build. Tests cover fixture visibility, locale availability, categories including opinion/world, published/missing article behavior, correction/source/related fields, and the fact-check no-conclusion state. `npm audit --audit-level=high` found 0 vulnerabilities; `git diff --check` passed.
+- **Review:** Reviewed all page templates against the frontend content contract and responsive wireframe hierarchy. Confirmed every navigation category resolves, editorial opinion/fact-check labels are explicit, no sample headline is represented as real reporting, the demo source uses a reserved invalid domain, and the source card external-link sanitizer remains in place. Manual Axe scans on home, category, article, and fact-check pages found 0 WCAG 2.1 A/AA or 2.2 A/AA violations. Visual screenshot review confirmed readable article hierarchy, corrections, sources, and related reporting.
+- **Verify:** Microsoft Edge browser runner checked 13 routes at 320, 375, 820, and 1440 px (52 route/viewport combinations): all approved pages returned HTTP 200, had a main landmark and fixture disclosure, and showed no horizontal overflow. Unknown category/article/hub slugs and unsupported `/en/` article returned 404. Browser console had no page errors. Keyboard Tab reached the skip link first. Initial HTTP HTML contains page headings and story content before client JavaScript.
+- **Exit:** Approved public page types are navigable, responsive, and populated only with fictional fixtures. Task 1.4 gates passed; await explicit user approval before Task 1.5.
 
 ### Task 1.5 — Build search and discovery interactions
 
@@ -241,4 +241,4 @@ These features are outside initial launch unless product scope is explicitly cha
 
 ## 10. Current status and next step
 
-Phase 0 and Tasks 1.1–1.3 are complete. The application now serves the Nepali-first responsive design system, shared site shell, and reusable story/media components against fictional fixtures. The next task is Task 1.4: public pages with mock content, but work must not begin until the user explicitly approves it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
+Phase 0 and Tasks 1.1–1.4 are complete. The application now serves the Nepali-first responsive design system and public reader pages using fictional fixtures. The next task is Task 1.5: search and discovery interactions; wait for explicit user approval before beginning it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.

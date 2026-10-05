@@ -416,6 +416,54 @@ textarea {
 .source-attribution__item > span:not(:first-child) {
   color: var(--ink-soft);
 }
+.article-body {
+  max-width: 72ch;
+  font-family: var(--font-editorial);
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 2;
+}
+.article-body > :first-child {
+  margin-top: 0;
+}
+.article-body p {
+  margin-block: 1.15em;
+}
+.article-body h2,
+.article-body h3 {
+  margin: 1.8em 0 0.65em;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.article-body h2 {
+  font-size: 1.45em;
+}
+.article-body h3 {
+  font-size: 1.2em;
+}
+.article-body ul,
+.article-body ol {
+  padding-left: 1.5em;
+}
+.article-body li {
+  margin-block: 0.45em;
+  padding-left: 0.25em;
+}
+.article-body blockquote {
+  margin: 1.75rem 0;
+  border-left: 4px solid var(--rule-strong);
+  padding: 0.4rem 0 0.4rem 1.25rem;
+  font-size: 1.15em;
+  font-weight: 700;
+}
+.article-body blockquote p {
+  margin-block: 0.25em;
+}
+.article-body cite {
+  color: var(--ink-soft);
+  font-family: var(--font-interface);
+  font-size: 0.75em;
+  font-style: normal;
+}
 @media (min-width: 48rem) {
   .story-card--standard.story-card--with-media {
     grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.85fr);

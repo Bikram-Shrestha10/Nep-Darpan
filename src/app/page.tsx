@@ -1,94 +1,137 @@
 import Link from "next/link";
 import { LeadStory, StoryCard } from "@/components/content/story-card";
-import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { ContentState } from "@/components/ui/content-state";
-import { MOCK_DATA_NOTICE, mockContentGateway } from "@/lib/content/mock-gateway";
+import { PreviewNotice } from "@/components/layout/preview-notice";
+import { mockContentGateway } from "@/lib/content/mock-gateway";
 
 export default async function Home() {
   const home = await mockContentGateway.getHome("ne-NP");
-
   return (
-    <main id="main-content" tabIndex={-1}>
-      <div className="border-b border-[var(--rule)] bg-[var(--ink)] text-white">
-        <div className="page-shell flex min-h-11 items-center gap-3 py-2 text-sm">
-          <strong className="bg-[var(--urgent)] px-2 py-1 text-xs whitespace-nowrap">
-            पूर्वावलोकन
-          </strong>
-          <p>{MOCK_DATA_NOTICE}</p>
-        </div>
-      </div>
-      <div className="page-shell py-8 sm:py-12">
-        <Breadcrumbs items={[{ label: "गृहपृष्ठ" }]} />
-        <section className="mt-8 grid gap-8 border-y-2 border-[var(--ink)] py-8 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)] lg:gap-10">
-          <div>
-            <p className="eyebrow text-[var(--urgent-dark)]">समाचार र मिडिया कम्पोनेन्ट · कार्य १.३</p>
-            <h1 className="editorial-heading mt-3 max-w-4xl text-[clamp(2.35rem,6vw,5.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
-              नेपाली समाचारका लागि स्पष्ट, आधुनिक र विश्वसनीय अनुभव
-            </h1>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">
-              यो साझा साइट संरचनाले फोन, ट्याब्लेट र डेस्कटपमा पढ्न, खोज्न र मुख्य खण्डमा पुग्न सजिलो बनाउँछ।
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link className="button-primary" href="/latest">
-                ताजा समाचार हेर्नुहोस्
-              </Link>
-              <Link className="button-secondary" href="/information-hub">
-                जानकारी केन्द्र
+    <>
+      <PreviewNotice />
+      <main id="main-content" tabIndex={-1}>
+        <div className="page-shell py-6 sm:py-9">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--rule-strong)] pb-3 text-xs text-[var(--ink-soft)]">
+            <p>पूर्वावलोकन अंक · काठमाडौं</p>
+            <p>नेपाली संस्करण · काल्पनिक नमुना सामग्री</p>
+          </div>
+          <section className="mt-5" aria-labelledby="lead-heading">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <p className="eyebrow text-[var(--urgent-dark)]">आजका मुख्य समाचार</p>
+                <h1 id="lead-heading" className="sr-only">
+                  आजका मुख्य समाचार
+                </h1>
+              </div>
+              <Link className="text-sm font-bold" href="/latest">
+                सबै ताजा समाचार →
               </Link>
             </div>
-          </div>
-          <aside
-            className="border-t border-[var(--rule)] pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8"
-            aria-labelledby="system-title"
-          >
-            <h2 id="system-title" className="eyebrow">
-              साझा प्रणाली
-            </h2>
-            <ul className="mt-4 divide-y divide-[var(--rule)] text-sm leading-6">
-              <li className="py-3">देवनागरीका लागि पढ्न मिल्ने अक्षर र लय</li>
-              <li className="py-3">किबोर्ड र स्पष्ट फोकस संकेत</li>
-              <li className="py-3">फोनदेखि ठूलो स्क्रिनसम्म उत्तरदायी ग्रिड</li>
-              <li className="py-3">लोडिङ, खाली र त्रुटि अवस्थाका साझा ढाँचा</li>
-            </ul>
-          </aside>
-        </section>
-        <section className="mt-10 grid gap-8" aria-label="काल्पनिक समाचार कार्डको पूर्वावलोकन">
-          {home.lead ? <LeadStory article={home.lead} /> : <ContentState kind="empty" />}
-          {home.latest[1] ? <StoryCard article={home.latest[1]} density="compact" /> : null}
-        </section>
-        <section
-          className="mt-12 border-t border-[var(--rule-strong)] pt-7"
-          aria-labelledby="controls-title"
-        >
-          <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
-            <div>
-              <h2 id="controls-title" className="editorial-heading text-2xl font-bold">
-                समाचार खोजको साझा फारम
+            {home.lead ? <LeadStory article={home.lead} /> : null}
+          </section>
+          <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.7fr)_minmax(17rem,0.8fr)]">
+            <section aria-labelledby="latest-heading">
+              <div className="mb-2 flex items-center justify-between border-b-4 border-[var(--ink)] pb-2">
+                <h2 id="latest-heading" className="editorial-heading text-2xl font-bold">
+                  ताजा अपडेट
+                </h2>
+                <Link className="text-sm font-bold" href="/latest">
+                  सबै हेर्नुहोस्
+                </Link>
+              </div>
+              <div className="grid gap-x-6 sm:grid-cols-2">
+                {home.latest.slice(1).map((story) => (
+                  <StoryCard key={story.id} article={story} density="compact" />
+                ))}
+              </div>
+            </section>
+            <aside
+              aria-labelledby="trending-heading"
+              className="border-t-4 border-[var(--urgent-dark)] pt-3 lg:border-t-0 lg:border-l lg:border-[var(--rule-strong)] lg:pl-6"
+            >
+              <p className="eyebrow text-[var(--urgent-dark)]">सम्पादकको छनोट</p>
+              <h2 id="trending-heading" className="editorial-heading mt-1 text-2xl font-bold">
+                चर्चामा
               </h2>
-              <p className="mt-2 text-sm text-[var(--ink-soft)]">
-                खोज परिणामको कार्यक्षमता कार्य १.५ मा जोडिनेछ।
-              </p>
-            </div>
-            <search>
-              <form action="/search" className="flex w-full max-w-xl flex-col gap-2 sm:flex-row">
-                <label className="sr-only" htmlFor="site-search">
-                  समाचार खोज्नुहोस्
-                </label>
-                <input
-                  className="field sm:min-w-80"
-                  id="site-search"
-                  name="q"
-                  placeholder="शीर्षक वा विषय खोज्नुहोस्"
-                  type="search"
-                />
-                <button className="button-primary whitespace-nowrap" type="submit">
-                  खोज्नुहोस्
-                </button>
-              </form>
-            </search>
+              <ol className="mt-3 divide-y divide-[var(--rule)]">
+                {home.trending.map((story, index) => (
+                  <li key={story.id} className="py-4">
+                    <span className="mr-3 font-serif text-3xl font-bold text-[var(--rule-strong)]">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <Link className="font-bold leading-7" href={story.href}>
+                      {story.headline}
+                    </Link>
+                    <p className="mt-1 text-xs text-[var(--ink-soft)]">
+                      {story.category.name} · काल्पनिक नमुना
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </aside>
           </div>
-        </section>
-      </div>
-    </main>
+          {home.sections.map((section) => (
+            <section
+              key={section.category.id}
+              className="mt-12"
+              aria-labelledby={`section-${section.category.slug}`}
+            >
+              <div className="mb-2 flex items-end justify-between border-b-4 border-[var(--ink)] pb-2">
+                <h2
+                  id={`section-${section.category.slug}`}
+                  className="editorial-heading text-2xl font-bold"
+                >
+                  {section.category.name}
+                </h2>
+                <Link className="text-sm font-bold" href={`/category/${section.category.slug}`}>
+                  थप समाचार →
+                </Link>
+              </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {section.articles.map((story) => (
+                  <StoryCard key={story.id} article={story} density="compact" />
+                ))}
+              </div>
+            </section>
+          ))}
+          <section
+            className="mt-12 border-y-2 border-[var(--ink)] bg-[var(--paper-muted)] px-5 py-6 sm:px-8"
+            aria-labelledby="hub-title"
+          >
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <p className="eyebrow">सन्दर्भ र उपयोगी जानकारी</p>
+                <h2 id="hub-title" className="editorial-heading mt-1 text-2xl font-bold">
+                  जानकारी केन्द्र
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
+                  व्याख्या, मार्गदर्शिका र तथ्य-जाँचका ढाँचा — यहाँका सबै सामग्री काल्पनिक नमुना हुन्।
+                </p>
+              </div>
+              <Link className="button-secondary" href="/information-hub">
+                सबै सामग्री हेर्नुहोस्
+              </Link>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              {home.hubHighlights.map((entry) => (
+                <Link
+                  key={entry.id}
+                  className="border border-[var(--rule)] bg-[var(--paper-raised)] p-4 font-bold leading-7"
+                  href={`/information-hub/${entry.slug}`}
+                >
+                  <span className="eyebrow block text-[var(--ink-soft)]">
+                    {entry.kind === "fact_check"
+                      ? "तथ्य जाँच नमुना"
+                      : entry.kind === "guide"
+                        ? "मार्गदर्शिका नमुना"
+                        : "व्याख्या नमुना"}
+                  </span>
+                  <span className="mt-2 block">{entry.title}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+    </>
   );
 }
