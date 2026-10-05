@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { MobileNavigation } from "@/components/layout/mobile-navigation";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,7 +16,17 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="ne-NP">
-      <body className="min-h-screen bg-stone-50 text-stone-950 antialiased">{children}</body>
+      <body className="antialiased">
+        <a className="skip-link" href="#main-content">
+          मुख्य सामग्रीमा जानुहोस्
+        </a>
+        <SiteHeader />
+        {children}
+        <div id="site-footer">
+          <SiteFooter />
+        </div>
+        <MobileNavigation />
+      </body>
     </html>
   );
 }

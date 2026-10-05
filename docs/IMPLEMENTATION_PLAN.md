@@ -74,13 +74,13 @@ Optional provider choices must not block independent frontend work. Keep depende
 - **Verify:** Started the local Next.js server and requested `/`; received HTTP 200. Confirmed the rendered document contains Nep Darpan, the fictional-data warning, `lang="ne-NP"`, and no Create Next App branding.
 - **Exit:** Clean local frontend foundation is running and all Task 1.1 gates passed. Continue to Task 1.2.
 
-### Task 1.2 — Build design system and responsive shell
+### Task 1.2 — Build design system and responsive shell — complete
 
-- **Build:** Implement paper-and-ink tokens, Devanagari-capable typography, layout/grid, header, responsive browser navigation, footer, buttons, cards, forms, breadcrumbs, focus styles, and reusable loading/error/empty states based on the supplied wireframe.
-- **Test:** Add component tests for shared controls/navigation and automated accessibility checks for shell components.
-- **Review:** Design/editorial review visual hierarchy, Nepali script, readability, wireframe interpretation, and responsive navigation labels.
-- **Verify:** Inspect keyboard-only use and phone/tablet/desktop widths; verify no horizontal overflow and usable zoom/reflow.
-- **Exit:** Shared visual system and shell approved for all public and newsroom screens.
+- **Build:** Added paper, ink, rule, urgency, focus, typography, spacing, control, and state tokens; a Nepali masthead; desktop and compact navigation; phone bottom navigation; footer; buttons; search field; breadcrumbs; skip link; and reusable loading, empty, and error states. The shell uses the supplied wireframe's broadsheet hierarchy while keeping live modules and unapproved integrations out of scope.
+- **Test:** `npm run check` passed Biome lint/format, strict TypeScript, 13 Vitest tests, Axe scans for the shell/shared states, and the Next.js production build. `npm audit` reports 0 vulnerabilities.
+- **Review:** Reviewed the diff and rendered phone/tablet/desktop screenshots for Devanagari hierarchy, readable line lengths, semantic landmarks, labels, visible fixture disclosure, restrained urgent color, reduced-motion behavior, and consistency with the frontend contract. Fixed test cleanup after Axe correctly detected duplicated landmarks left by earlier test renders.
+- **Verify:** Rendered the running site in Microsoft Edge at 375×812, 820×1000, and 1440×1000. All three reported `scrollWidth === clientWidth`; `lang="ne-NP"`, the main landmark, and the primary heading were present. Keyboard Tab reached the skip link first and the mobile menu second; Enter opened the menu. Visual inspection confirmed responsive reflow at all three widths.
+- **Exit:** Shared visual system and responsive shell gates passed. Await explicit user approval before Task 1.3.
 
 ### Task 1.3 — Build reusable story and media components
 
@@ -241,4 +241,4 @@ These features are outside initial launch unless product scope is explicitly cha
 
 ## 10. Current status and next step
 
-Phase 0 and Task 1.1 are complete. Next is Task 1.2: build the Nepali-first design system and responsive site shell from the wireframe. The application foundation currently serves a development checkpoint page backed by fictional fixtures. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
+Phase 0, Task 1.1, and Task 1.2 are complete. The application now serves the Nepali-first responsive design system and shared site shell backed by fictional fixtures. The next task is Task 1.3: reusable story and media components, but work must not begin until the user explicitly approves it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
