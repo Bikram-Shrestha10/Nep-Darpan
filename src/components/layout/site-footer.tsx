@@ -64,8 +64,8 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-[var(--rule)]">
         <div className="page-shell flex flex-col gap-2 py-5 text-xs text-[var(--ink-soft)] sm:flex-row sm:justify-between">
-          <p>© २०८३ नेप दर्पण। सर्वाधिकार सुरक्षित।</p>
-          <p>उत्तरदायी वेब प्रकाशन · मोबाइल एप होइन</p>
+          <p>नेप दर्पण · नेपाली समाचार र सन्दर्भ</p>
+          <p>फोन, ट्याब्लेट र डेस्कटपका लागि वेब संस्करण</p>
         </div>
       </div>
     </footer>

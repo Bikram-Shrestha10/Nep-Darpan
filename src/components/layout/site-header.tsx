@@ -44,7 +44,7 @@ export function SiteHeader() {
             </ul>
           </nav>
         </details>
-        <p className="hidden text-xs font-bold tracking-[0.12em] md:block">स्थापना २०८३</p>
+        <p className="hidden text-xs font-bold tracking-[0.12em] md:block">समाचार र सन्दर्भ</p>
         <Link
           className="justify-self-center text-center no-underline"
           href="/"

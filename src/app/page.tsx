@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LeadStory, StoryCard } from "@/components/content/story-card";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ContentState } from "@/components/ui/content-state";
 import { MOCK_DATA_NOTICE, mockContentGateway } from "@/lib/content/mock-gateway";
@@ -20,7 +21,7 @@ export default async function Home() {
         <Breadcrumbs items={[{ label: "गृहपृष्ठ" }]} />
         <section className="mt-8 grid gap-8 border-y-2 border-[var(--ink)] py-8 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)] lg:gap-10">
           <div>
-            <p className="eyebrow text-[var(--urgent-dark)]">डिजाइन प्रणाली · कार्य १.२</p>
+            <p className="eyebrow text-[var(--urgent-dark)]">समाचार र मिडिया कम्पोनेन्ट · कार्य १.३</p>
             <h1 className="editorial-heading mt-3 max-w-4xl text-[clamp(2.35rem,6vw,5.2rem)] font-black leading-[1.08] tracking-[-0.035em]">
               नेपाली समाचारका लागि स्पष्ट, आधुनिक र विश्वसनीय अनुभव
             </h1>
@@ -51,28 +52,9 @@ export default async function Home() {
             </ul>
           </aside>
         </section>
-        <section className="mt-10 grid gap-8 md:grid-cols-2" aria-labelledby="fixture-title">
-          <article className="border-t-4 border-[var(--ink)] bg-[var(--paper-raised)] p-6">
-            <p className="eyebrow text-[var(--urgent-dark)]">काल्पनिक समाचार नमुना</p>
-            <h2
-              id="fixture-title"
-              className="editorial-heading mt-3 text-3xl font-bold leading-tight"
-            >
-              {home.lead?.headline}
-            </h2>
-            <p className="mt-3 leading-7 text-[var(--ink-soft)]">{home.lead?.summary}</p>
-            <p className="mt-5 border-t border-[var(--rule)] pt-4 text-xs text-[var(--ink-soft)]">
-              सक्रिय भाषा: नेपाली · वास्तविक समाचार होइन
-            </p>
-          </article>
-          <div className="space-y-4">
-            <ContentState kind="loading" />
-            <ContentState
-              kind="empty"
-              title="अर्को खण्डका लागि तयार"
-              description="कार्य १.३ मा समाचार र मिडिया कम्पोनेन्ट यहाँ जोडिनेछन्।"
-            />
-          </div>
+        <section className="mt-10 grid gap-8" aria-label="काल्पनिक समाचार कार्डको पूर्वावलोकन">
+          {home.lead ? <LeadStory article={home.lead} /> : <ContentState kind="empty" />}
+          {home.latest[1] ? <StoryCard article={home.latest[1]} density="compact" /> : null}
         </section>
         <section
           className="mt-12 border-t border-[var(--rule-strong)] pt-7"

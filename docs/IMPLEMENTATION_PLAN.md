@@ -82,13 +82,13 @@ Optional provider choices must not block independent frontend work. Keep depende
 - **Verify:** Rendered the running site in Microsoft Edge at 375×812, 820×1000, and 1440×1000. All three reported `scrollWidth === clientWidth`; `lang="ne-NP"`, the main landmark, and the primary heading were present. Keyboard Tab reached the skip link first and the mobile menu second; Enter opened the menu. Visual inspection confirmed responsive reflow at all three widths.
 - **Exit:** Shared visual system and responsive shell gates passed. Await explicit user approval before Task 1.3.
 
-### Task 1.3 — Build reusable story and media components
+### Task 1.3 — Build reusable story and media components — complete
 
-- **Build:** Create typed story cards, lead-story layouts, topic labels, author/byline, timestamps, correction notices, opinion/fact-check labels, related-story blocks, responsive image/video placeholders, and source/attribution displays using fixtures.
-- **Test:** Cover variants, missing optional data, long Nepali headlines, long author names, correction state, image alternative text, and loading/error states.
-- **Review:** Editor verifies that reporting, opinion, sponsored content, fact checks, corrections, and source attribution cannot be confused visually.
-- **Verify:** Inspect component combinations at all target widths and with long Devanagari text; confirm graceful layout with missing media.
-- **Exit:** Reusable components satisfy the content contract and editorial labels are clear.
+- **Build:** Added typed lead and compact/standard story cards, topic and story-kind labels, editorials labels for breaking/opinion/analysis/fact-check/sponsored content, Nepali bylines and Kathmandu-localized timestamps, correction notices, related-story lists, source attribution, and responsive image/video placeholders. Placeholders expose alt text, captions, credits, aspect ratio, and video duration without fetching the fixture URLs or implying playback. Source links are limited to HTTP(S). Added a second explicitly fictional card fixture for responsive preview coverage.
+- **Test:** `npm run check` passed lint/format, strict TypeScript, 22 Vitest tests, Axe scans, and the production build. Tests cover compact/standard cards, missing optional fields, long Devanagari headlines and author names, corrections, unique editorial labels, image/video alt and attribution, empty related content, unsafe source URLs, and fixture isolation. `npm audit --audit-level=high` found 0 vulnerabilities.
+- **Review:** Reviewed the content components against the public contract. Labels remain explicit and do not rely on color alone; opinion and fact-check kind labels are not duplicated. Media fixtures make no network requests, empty alt text is decorative, video preview text is announced with its poster description, and unsafe source protocols are displayed without links. Removed an unsupported establishment-year claim from the shared masthead.
+- **Verify:** Exercised the running site in Edge at 320×800, 375×812, 820×1000, and 1440×1000. Each request returned HTTP 200 with no browser page errors or horizontal overflow; the Nepali document language, server-rendered headline, image alternative text, and credit were present. Keyboard Tab reaches the skip link first and Enter opens the phone navigation. Visual inspection confirmed the lead and compact cards reflow with media present and missing.
+- **Exit:** Shared story and media components pass their gates. Await explicit user approval before Task 1.4.
 
 ### Task 1.4 — Build public pages with mock content
 
@@ -241,4 +241,4 @@ These features are outside initial launch unless product scope is explicitly cha
 
 ## 10. Current status and next step
 
-Phase 0, Task 1.1, and Task 1.2 are complete. The application now serves the Nepali-first responsive design system and shared site shell backed by fictional fixtures. The next task is Task 1.3: reusable story and media components, but work must not begin until the user explicitly approves it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
+Phase 0 and Tasks 1.1–1.3 are complete. The application now serves the Nepali-first responsive design system, shared site shell, and reusable story/media components against fictional fixtures. The next task is Task 1.4: public pages with mock content, but work must not begin until the user explicitly approves it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.

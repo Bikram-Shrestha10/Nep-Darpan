@@ -19,6 +19,7 @@ describe("mock public content gateway", () => {
     firstRead.latest.pop();
 
     const secondRead = await mockContentGateway.getHome("ne-NP");
-    expect(secondRead.latest).toHaveLength(1);
+    expect(secondRead.latest).toHaveLength(2);
+    expect(secondRead.latest[1]?.headline).toContain("अर्को समाचार कार्ड");
   });
 });

@@ -4,7 +4,7 @@ Nep Darpan is a responsive, Nepali-first news and information website for phone,
 
 ## Current development stage
 
-Tasks 1.1 and 1.2 are complete. The current homepage demonstrates the Nepali-first responsive design system and shared site shell with fictional, typed fixtures. Reusable story and media components are the next approved-plan task. PostgreSQL, Redis, Cloudinary, authentication, and live data are intentionally not connected yet. Never treat the fixture story as real reporting.
+Tasks 1.1–1.3 are complete. The current homepage demonstrates the Nepali-first responsive design system, shared site shell, and reusable story/media components with fictional, typed fixtures. Public page layouts are the next approved-plan task. PostgreSQL, Redis, Cloudinary, authentication, and live data are intentionally not connected yet. Never treat the fixture stories or media previews as real reporting or published media.
 
 ## Requirements
 
