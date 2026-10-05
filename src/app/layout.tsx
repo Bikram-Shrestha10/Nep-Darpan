@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="ne-NP">
+    <html lang="ne-NP" data-scroll-behavior="smooth">
       <body className="antialiased">
         <a className="skip-link" href="#main-content">
           मुख्य सामग्रीमा जानुहोस्

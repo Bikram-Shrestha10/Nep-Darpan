@@ -1,5 +1,6 @@
 import type {
   ArticleCard,
+  CategorySummary,
   CategoryPageData,
   HomePageData,
   HubEntry,
@@ -7,6 +8,7 @@ import type {
   PublishedArticle,
   PublicContentGateway,
 } from "@/lib/content/contracts";
+import { searchFixtureStories } from "@/lib/content/search-fixtures";
 
 export const MOCK_DATA_NOTICE =
   "यस वेबसाइटका सबै समाचार र जानकारी केवल डिजाइन परीक्षणका लागि बनाइएका काल्पनिक नमुना हुन्।";
@@ -25,6 +27,7 @@ const categories = {
   world: { id: "demo-world", name: "विश्व", slug: "world", locale: "ne-NP" },
   opinion: { id: "demo-opinion", name: "विचार", slug: "opinion", locale: "ne-NP" },
 } as const;
+export const MOCK_SEARCH_CATEGORIES: CategorySummary[] = Object.values(categories);
 
 const media = {
   id: "fictional-preview-image",
@@ -319,11 +322,7 @@ export const mockContentGateway: PublicContentGateway = {
     });
   },
   async search(filters) {
-    return {
-      filters,
-      results: [],
-      pageInfo: { page: filters.page, pageSize: 10, totalItems: 0, totalPages: 0 },
-    };
+    return searchFixtureStories(cards, filters);
   },
   async getHubEntry(locale, slug) {
     if (locale !== "ne-NP") return null;

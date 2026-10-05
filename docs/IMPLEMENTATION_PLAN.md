@@ -100,11 +100,11 @@ Optional provider choices must not block independent frontend work. Keep depende
 
 ### Task 1.5 — Build search and discovery interactions
 
-- **Build:** Implement search forms/results, topic filters, sort controls if approved, pagination or load-more interaction, locale selection, and URL-backed query state using a local fixture search adapter. Show useful empty, loading, and error states.
-- **Test:** Cover Nepali/English query fixtures, punctuation/diacritics, filters, empty/malformed queries, keyboard submission, URL state, and pagination.
-- **Review:** Editor checks labels and result-card usefulness; technical reviewer checks URL behavior, user input handling, and that mock search is replaceable by server search.
-- **Verify:** Exercise search with the agreed sample terms on phone and desktop, including refresh/back navigation; document known fixture limitations.
-- **Exit:** Discovery UI is usable and its typed contract can be backed by the later search endpoint.
+- **Build:** Added a server-rendered `/search` page with a GET form, query, locale, category and story-kind filters, relevance/newest sorting, URL-backed pagination, suggested queries, latest-story discovery, and empty/loading/error states. The fixture adapter supports Unicode normalization, punctuation and symbol removal, all-term matching, relevance ranking, and three-item pages. English query terms can match editorial kind labels, but the English locale clearly reports that reviewed English content is not yet available. Search remains behind the replaceable `PublicContentGateway` and calls no external service.
+- **Test:** `npm run check` passed lint, format, strict TypeScript, 32 Vitest tests, and production build. Search tests cover Nepali terms with punctuation, normalization, English kind queries, locale/category/type filters, relevance/newest ordering, pagination/clamping, punctuation-only and oversized queries, repeated/invalid URL parameters, and preservation of valid URL filter state. `npm audit --audit-level=high` found 0 vulnerabilities; `git diff --check` passed.
+- **Review:** Reviewed labels and result cards for reader clarity, query parameters for bounded length and allowlisted filters, duplicate/malformed parameters for safe fallback, URL encoding and pagination links for state preservation, and gateway isolation for backend replaceability. English content is not fabricated or silently translated. Axe scans of the search prompt, results, English-empty, and filtered-empty states found 0 WCAG 2.1 A/AA or 2.2 A/AA violations.
+- **Verify:** Microsoft Edge exercised Nepali query/punctuation, filter and no-result cases, English empty state, duplicate parameters, invalid page, and a two-page newest-sorted query. Form submission, refresh, browser back/forward, and pagination retained URL state. Four responsive widths (320, 375, 820, 1440 px) had no horizontal overflow. The production build served a direct page-two URL with HTTP 200 and the expected second-page story content.
+- **Exit:** Search and discovery are usable from the URL with fixture data; English publication remains gated on reviewed translation. Task 1.5 gates passed; await explicit user approval before Task 1.6.
 
 ### Task 1.6 — Build newsroom screens as frontend prototypes
 
@@ -241,4 +241,4 @@ These features are outside initial launch unless product scope is explicitly cha
 
 ## 10. Current status and next step
 
-Phase 0 and Tasks 1.1–1.4 are complete. The application now serves the Nepali-first responsive design system and public reader pages using fictional fixtures. The next task is Task 1.5: search and discovery interactions; wait for explicit user approval before beginning it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
+Phase 0 and Tasks 1.1–1.5 are complete. The application serves the Nepali-first responsive reader pages and URL-backed search using fictional fixtures. The next task is Task 1.6: newsroom screen prototypes; wait for explicit user approval before beginning it. Docker is deferred until Task 2.1, when PostgreSQL and Redis services are needed. Every implementation task requires its own test, review, and verification before the next begins.
