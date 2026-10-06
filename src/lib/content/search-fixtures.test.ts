@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { SearchFilters } from "@/lib/content/contracts";
 import { mockContentGateway } from "@/lib/content/mock-gateway";
-import { normalizeSearchText } from "@/lib/content/search-fixtures";
+import { normalizeSearchText, searchFixtureStories } from "@/lib/content/search-fixtures";
 import { parseSearchParams } from "@/lib/content/search-params";
 
 const baseFilters: SearchFilters = {
@@ -51,6 +51,32 @@ describe("fictional search adapter", () => {
     expect(english.pageInfo.totalItems).toBe(0);
   });
 
+  it("filters inclusively by Kathmandu calendar date, including date-only searches", async () => {
+    const result = await mockContentGateway.search({
+      ...baseFilters,
+      from: "2026-10-05",
+      to: "2026-10-05",
+    });
+    expect(result.pageInfo.totalItems).toBe(2);
+    expect(result.filters).toMatchObject({ from: "2026-10-05", to: "2026-10-05" });
+    expect(result.results.every((story) => story.publishedAt.slice(0, 10) === "2026-10-05")).toBe(
+      true,
+    );
+  });
+
+  it("uses Kathmandu rather than UTC day boundaries for date filters", async () => {
+    const fixture = await mockContentGateway.getArticle("ne-NP", "demo-story");
+    expect(fixture).not.toBeNull();
+    if (!fixture) throw new Error("Expected a fictional article fixture");
+    const nearMidnight = { ...fixture, publishedAt: "2026-10-04T18:30:00.000Z" };
+    const result = searchFixtureStories([nearMidnight], {
+      ...baseFilters,
+      from: "2026-10-05",
+      to: "2026-10-05",
+    });
+    expect(result.results).toHaveLength(1);
+  });
+
   it("sorts newest first and paginates without dropping filters", async () => {
     const first = await mockContentGateway.search({
       ...baseFilters,
@@ -92,6 +118,8 @@ describe("search URL state parser", () => {
       locale: "ne-NP",
       sort: "newest",
       page: "2",
+      from: "2026-10-02",
+      to: "2026-10-05",
     });
     expect(parsed.issues).toEqual([]);
     expect(parsed.filters).toMatchObject({
@@ -101,6 +129,8 @@ describe("search URL state parser", () => {
       locale: "ne-NP",
       sort: "newest",
       page: 2,
+      from: "2026-10-02",
+      to: "2026-10-05",
     });
   });
 
@@ -118,5 +148,16 @@ describe("search URL state parser", () => {
     expect(parsed.filters.categorySlug).toBeUndefined();
     expect(parsed.filters.page).toBe(1);
     expect(parseSearchParams({ q: "x".repeat(140) }).issues).toContain("query_too_long");
+  });
+
+  it("rejects invalid dates and reversed date ranges", () => {
+    const invalidDate = parseSearchParams({ from: "2026-02-30" });
+    expect(invalidDate.issues).toContain("invalid_date");
+    expect(invalidDate.filters.from).toBeUndefined();
+
+    const reversed = parseSearchParams({ from: "2026-10-06", to: "2026-10-05" });
+    expect(reversed.issues).toContain("invalid_date_range");
+    expect(reversed.filters.from).toBeUndefined();
+    expect(reversed.filters.to).toBeUndefined();
   });
 });

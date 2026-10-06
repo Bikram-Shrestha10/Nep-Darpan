@@ -25,6 +25,7 @@ const footerGroups = [
       ["सम्पादकीय मापदण्ड", "/editorial-standards"],
       ["सम्पर्क", "/contact"],
       ["गोपनीयता", "/privacy"],
+      ["सेवाका सर्त", "/terms"],
     ],
   },
 ] as const;

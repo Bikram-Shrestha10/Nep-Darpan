@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
 import { ArticleMedia } from "@/components/content/article-media";
+import { ArticleShare } from "@/components/content/article-share";
 import { CorrectionNoticePanel } from "@/components/content/correction-notice";
 import { RelatedStories } from "@/components/content/related-stories";
 import { SourceAttribution } from "@/components/content/source-attribution";
@@ -15,7 +16,7 @@ import {
 import { PreviewNotice } from "@/components/layout/preview-notice";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import type { LocaleCode } from "@/lib/content/contracts";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { contentGateway } from "@/lib/content/gateway";
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 function isSupportedLocale(locale: string): locale is LocaleCode {
@@ -25,7 +26,7 @@ function isSupportedLocale(locale: string): locale is LocaleCode {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!isSupportedLocale(locale)) return { title: "सामग्री उपलब्ध छैन" };
-  const article = await mockContentGateway.getArticle(locale, slug);
+  const article = await contentGateway.getArticle(locale, slug);
   return article
     ? {
         title: article.seo.title,
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ArticlePage({ params }: Props) {
   const { locale, slug } = await params;
   if (!isSupportedLocale(locale)) notFound();
-  const article = await mockContentGateway.getArticle(locale, slug);
+  const article = await contentGateway.getArticle(locale, slug);
   if (article?.status !== "published") notFound();
   return (
     <>
@@ -67,6 +68,9 @@ export default async function ArticlePage({ params }: Props) {
               <AuthorByline authors={article.authors} />
               <PublishedTime value={article.publishedAt} label="प्रकाशित" />
               {article.updatedAt ? <PublishedTime value={article.updatedAt} label="अपडेट" /> : null}
+            </div>
+            <div className="mt-5">
+              <ArticleShare />
             </div>
           </header>
           {article.leadMedia ? (

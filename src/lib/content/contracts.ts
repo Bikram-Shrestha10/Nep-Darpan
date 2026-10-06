@@ -129,8 +129,8 @@ export interface SearchFilters {
   categorySlug?: string;
   kind?: StoryKind;
   sort?: "relevance" | "newest";
-  from?: string;
-  to?: string;
+  from?: string; // inclusive calendar date in Asia/Kathmandu (YYYY-MM-DD)
+  to?: string; // inclusive calendar date in Asia/Kathmandu; must not precede from
   page: number;
 }
 
@@ -177,10 +177,11 @@ export interface ApiProblem {
 }
 
 export interface PublicContentGateway {
+  listCategories(locale: LocaleCode): Promise<CategorySummary[]>;
   getHome(locale: LocaleCode): Promise<HomePageData>;
   getCategory(locale: LocaleCode, slug: string, page?: number): Promise<CategoryPageData | null>;
   getArticle(locale: LocaleCode, slug: string): Promise<PublishedArticle | null>;
   search(filters: SearchFilters): Promise<SearchPage>;
   getHubEntry(locale: LocaleCode, slug: string): Promise<HubEntry | null>;
-  listHub(locale: LocaleCode, page?: number): Promise<HubPageData>;
+  listHub(locale: LocaleCode, page?: number, kind?: HubEntry["kind"]): Promise<HubPageData>;
 }

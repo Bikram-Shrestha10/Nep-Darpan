@@ -6,19 +6,19 @@ import { RelatedStories } from "@/components/content/related-stories";
 import { SourceAttribution } from "@/components/content/source-attribution";
 import { PreviewNotice } from "@/components/layout/preview-notice";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { contentGateway } from "@/lib/content/gateway";
 
 type Props = { params: Promise<{ slug: string }> };
 const label = (kind: string) =>
   kind === "fact_check" ? "तथ्य जाँच नमुना" : kind === "guide" ? "मार्गदर्शिका नमुना" : "व्याख्या नमुना";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const entry = await mockContentGateway.getHubEntry("ne-NP", slug);
+  const entry = await contentGateway.getHubEntry("ne-NP", slug);
   return entry ? { title: entry.title, description: entry.summary } : { title: "सामग्री भेटिएन" };
 }
 export default async function HubEntryPage({ params }: Props) {
   const { slug } = await params;
-  const entry = await mockContentGateway.getHubEntry("ne-NP", slug);
+  const entry = await contentGateway.getHubEntry("ne-NP", slug);
   if (!entry) notFound();
   return (
     <>

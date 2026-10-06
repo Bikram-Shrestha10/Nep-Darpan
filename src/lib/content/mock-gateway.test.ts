@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { MOCK_DATA_NOTICE, mockContentGateway } from "@/lib/content/mock-gateway";
 
 describe("mock public content gateway", () => {
+  it("lists only reviewed fixture categories for the requested locale", async () => {
+    const categories = await mockContentGateway.listCategories("ne-NP");
+    expect(categories.map((category) => category.slug)).toContain("economy");
+    expect(await mockContentGateway.listCategories("en")).toEqual([]);
+  });
+
   it("serves clearly disclosed fictional homepage sections and hub highlights", async () => {
     const home = await mockContentGateway.getHome("ne-NP");
     expect(MOCK_DATA_NOTICE).toContain("काल्पनिक");
@@ -29,6 +35,8 @@ describe("mock public content gateway", () => {
       "opinion",
     );
     expect(await mockContentGateway.getCategory("ne-NP", "missing")).toBeNull();
+    const lastCategoryPage = await mockContentGateway.getCategory("ne-NP", "economy", 99);
+    expect(lastCategoryPage?.pageInfo.page).toBe(1);
     expect((await mockContentGateway.getArticle("ne-NP", "demo-story"))?.status).toBe("published");
     expect(await mockContentGateway.getArticle("ne-NP", "draft-or-missing")).toBeNull();
   });
@@ -46,5 +54,16 @@ describe("mock public content gateway", () => {
     expect(entry?.kind).toBe("fact_check");
     expect(entry?.summary).toContain("कुनै वास्तविक दाबी");
     expect(entry?.conclusion).toBeUndefined();
+  });
+
+  it("clamps hub pagination to available fixture pages", async () => {
+    const page = await mockContentGateway.listHub("ne-NP", 99);
+    expect(page.pageInfo).toMatchObject({ page: 1, pageSize: 10, totalItems: 3, totalPages: 1 });
+    expect(page.entries).toHaveLength(3);
+    const factChecks = await mockContentGateway.listHub("ne-NP", 1, "fact_check");
+    expect(factChecks.entries.map((entry) => entry.kind)).toEqual(["fact_check"]);
+    expect(factChecks.pageInfo.totalItems).toBe(1);
+    const guides = await mockContentGateway.listHub("ne-NP", 1, "guide");
+    expect(guides.entries.map((entry) => entry.kind)).toEqual(["guide"]);
   });
 });

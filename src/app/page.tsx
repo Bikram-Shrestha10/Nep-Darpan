@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { LeadStory, StoryCard } from "@/components/content/story-card";
 import { PreviewNotice } from "@/components/layout/preview-notice";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { contentGateway } from "@/lib/content/gateway";
 
 export default async function Home() {
-  const home = await mockContentGateway.getHome("ne-NP");
+  const home = await contentGateway.getHome("ne-NP");
   return (
     <>
       <PreviewNotice />

@@ -5,7 +5,7 @@ import { PreviewNotice } from "@/components/layout/preview-notice";
 import { ContentState } from "@/components/ui/content-state";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import type { SearchFilters, SearchPage as SearchPageResult } from "@/lib/content/contracts";
-import { MOCK_SEARCH_CATEGORIES, mockContentGateway } from "@/lib/content/mock-gateway";
+import { contentGateway } from "@/lib/content/gateway";
 import {
   parseSearchParams,
   type SearchParamIssue,
@@ -32,10 +32,14 @@ const issueCopy: Record<SearchParamIssue, string> = {
   query_too_long: "खोज शब्द १२० वर्णभन्दा छोटो राख्नुहोस्।",
   invalid_filter: "एउटा खोज फिल्टर मान्य थिएन; त्यसलाई हटाएर नतिजा देखाइएको छ।",
   invalid_page: "पृष्ठ नम्बर मान्य थिएन; पहिलो पृष्ठ देखाइएको छ।",
+  invalid_date: "प्रकाशन मिति मान्य छैन; मिति YYYY-MM-DD ढाँचामा छान्नुहोस्।",
+  invalid_date_range: "सुरु मिति अन्तिम मितिभन्दा पछाडि हुन मिल्दैन।",
 };
 
 function hasSearchCriteria(filters: SearchFilters): boolean {
-  return Boolean(filters.query || filters.categorySlug || filters.kind);
+  return Boolean(
+    filters.query || filters.categorySlug || filters.kind || filters.from || filters.to,
+  );
 }
 
 function pageHref(filters: SearchFilters, page: number): string {
@@ -44,6 +48,8 @@ function pageHref(filters: SearchFilters, page: number): string {
   if (filters.locale !== "ne-NP") params.set("locale", filters.locale);
   if (filters.categorySlug) params.set("category", filters.categorySlug);
   if (filters.kind) params.set("kind", filters.kind);
+  if (filters.from) params.set("from", filters.from);
+  if (filters.to) params.set("to", filters.to);
   if (filters.sort && filters.sort !== "relevance") params.set("sort", filters.sort);
   params.set("page", String(page));
   return `/search?${params.toString()}`;
@@ -52,14 +58,16 @@ function pageHref(filters: SearchFilters, page: number): string {
 function SearchIssues({ issues }: { issues: SearchParamIssue[] }) {
   if (!issues.length) return null;
   return (
-    <ul
+    <div
       className="mt-4 border-l-4 border-[var(--urgent-dark)] bg-[var(--paper-muted)] p-4 text-sm leading-6"
       role="alert"
     >
-      {issues.map((issue) => (
-        <li key={issue}>{issueCopy[issue]}</li>
-      ))}
-    </ul>
+      <ul>
+        {issues.map((issue) => (
+          <li key={issue}>{issueCopy[issue]}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -73,10 +81,11 @@ export default async function SearchPage({ searchParams }: Props) {
         results: [],
         pageInfo: { page: 1, pageSize: 3, totalItems: 0, totalPages: 0 },
       })
-    : mockContentGateway.search(filters);
-  const [search, home] = await Promise.all([
+    : contentGateway.search(filters);
+  const [search, home, categories] = await Promise.all([
     searchPromise,
-    active ? Promise.resolve(null) : mockContentGateway.getHome("ne-NP"),
+    active ? Promise.resolve(null) : contentGateway.getHome("ne-NP"),
+    contentGateway.listCategories(filters.locale),
   ]);
   const number = new Intl.NumberFormat("ne-NP");
 
@@ -98,7 +107,7 @@ export default async function SearchPage({ searchParams }: Props) {
           method="get"
           className="mt-6 border border-[var(--rule)] bg-[var(--paper-raised)] p-4 sm:p-6"
         >
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(14rem,2fr)_repeat(4,minmax(8rem,1fr))]">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(14rem,2fr)_repeat(6,minmax(7rem,1fr))]">
             <div className="sm:col-span-2 lg:col-span-1">
               <label className="eyebrow mb-2 block" htmlFor="search-query">
                 खोज शब्द
@@ -138,7 +147,7 @@ export default async function SearchPage({ searchParams }: Props) {
                 defaultValue={filters.categorySlug ?? ""}
               >
                 <option value="">सबै खण्ड</option>
-                {MOCK_SEARCH_CATEGORIES.map((category) => (
+                {categories.map((category) => (
                   <option key={category.slug} value={category.slug}>
                     {category.name}
                   </option>
@@ -177,7 +186,36 @@ export default async function SearchPage({ searchParams }: Props) {
                 <option value="newest">नयाँ पहिले</option>
               </select>
             </div>
+            <div>
+              <label className="eyebrow mb-2 block" htmlFor="search-from">
+                मिति देखि
+              </label>
+              <input
+                className="field"
+                id="search-from"
+                max={filters.to}
+                name="from"
+                type="date"
+                defaultValue={filters.from ?? ""}
+              />
+            </div>
+            <div>
+              <label className="eyebrow mb-2 block" htmlFor="search-to">
+                मिति सम्म
+              </label>
+              <input
+                className="field"
+                id="search-to"
+                min={filters.from}
+                name="to"
+                type="date"
+                defaultValue={filters.to ?? ""}
+              />
+            </div>
           </div>
+          <p className="mt-3 text-xs text-[var(--ink-soft)]">
+            मिति काठमाडौं समयअनुसार समावेशी रूपमा लागू हुन्छ।
+          </p>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <button className="button-primary" type="submit">
               नतिजा खोज्नुहोस्

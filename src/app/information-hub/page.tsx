@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PreviewNotice } from "@/components/layout/preview-notice";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { ContentState } from "@/components/ui/content-state";
+import { PageNavigation } from "@/components/ui/page-navigation";
+import type { HubEntry } from "@/lib/content/contracts";
+import { contentGateway } from "@/lib/content/gateway";
 
 export const metadata: Metadata = {
   title: "जानकारी केन्द्र",
@@ -10,8 +13,26 @@ export const metadata: Metadata = {
 };
 const label = (kind: string) =>
   kind === "fact_check" ? "तथ्य जाँच नमुना" : kind === "guide" ? "मार्गदर्शिका नमुना" : "व्याख्या नमुना";
-export default async function InformationHubPage() {
-  const data = await mockContentGateway.listHub("ne-NP");
+type HubKind = HubEntry["kind"];
+const typeFilters: { label: string; query: string; kind?: HubKind }[] = [
+  { label: "सबै", query: "" },
+  { label: "व्याख्या", query: "explainer", kind: "explainer" },
+  { label: "मार्गदर्शिका", query: "guide", kind: "guide" },
+  { label: "तथ्य जाँच", query: "fact-check", kind: "fact_check" },
+];
+type Props = { searchParams: Promise<{ page?: string | string[]; type?: string | string[] }> };
+function requestedPage(value: string | string[] | undefined): number {
+  if (typeof value !== "string" || !/^[1-9]\d*$/u.test(value)) return 1;
+  const page = Number(value);
+  return Number.isSafeInteger(page) ? page : 1;
+}
+export default async function InformationHubPage({ searchParams }: Props) {
+  const query = await searchParams;
+  const selectedType =
+    typeof query.type === "string"
+      ? typeFilters.find((filter) => filter.query === query.type && filter.kind)
+      : undefined;
+  const data = await contentGateway.listHub("ne-NP", requestedPage(query.page), selectedType?.kind);
   return (
     <>
       <PreviewNotice />
@@ -25,37 +46,72 @@ export default async function InformationHubPage() {
             बनाइएका काल्पनिक नमुना हुन्।
           </p>
         </header>
-        <section
-          className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-          aria-label="जानकारी केन्द्रका सामग्री"
-        >
-          {data.entries.map((entry) => (
-            <article
-              key={entry.id}
-              className="flex flex-col border border-[var(--rule)] bg-[var(--paper-raised)] p-5"
-            >
-              <p className="eyebrow">{label(entry.kind)}</p>
-              <h2 className="editorial-heading mt-3 text-2xl font-bold leading-snug">
-                <Link href={`/information-hub/${entry.slug}`}>{entry.title}</Link>
-              </h2>
-              <p className="mt-3 flex-1 text-sm leading-7 text-[var(--ink-soft)]">
-                {entry.summary}
-              </p>
-              <p className="mt-4 text-xs text-[var(--ink-soft)]">
-                नमुना समीक्षा:{" "}
-                <time dateTime={entry.reviewedAt}>
-                  {new Intl.DateTimeFormat("ne-NP", {
-                    dateStyle: "medium",
-                    timeZone: "Asia/Kathmandu",
-                  }).format(new Date(entry.reviewedAt))}
-                </time>
-              </p>
-              <Link className="mt-4 font-bold" href={`/information-hub/${entry.slug}`}>
-                सामग्री पढ्नुहोस् →
+        <nav className="mt-5 flex flex-wrap gap-2" aria-label="जानकारी सामग्रीको प्रकार">
+          {typeFilters.map((filter) => {
+            const href = filter.query
+              ? `/information-hub?type=${filter.query}`
+              : "/information-hub";
+            const current = (selectedType?.query ?? "") === filter.query;
+            return (
+              <Link
+                aria-current={current ? "page" : undefined}
+                className="story-category"
+                href={href}
+                key={filter.query || "all"}
+              >
+                {filter.label}
               </Link>
-            </article>
-          ))}
-        </section>
+            );
+          })}
+        </nav>
+        {data.entries.length ? (
+          <section
+            className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+            aria-label="जानकारी केन्द्रका सामग्री"
+          >
+            {data.entries.map((entry) => (
+              <article
+                key={entry.id}
+                className="flex flex-col border border-[var(--rule)] bg-[var(--paper-raised)] p-5"
+              >
+                <p className="eyebrow">{label(entry.kind)}</p>
+                <h2 className="editorial-heading mt-3 text-2xl font-bold leading-snug">
+                  <Link href={`/information-hub/${entry.slug}`}>{entry.title}</Link>
+                </h2>
+                <p className="mt-3 flex-1 text-sm leading-7 text-[var(--ink-soft)]">
+                  {entry.summary}
+                </p>
+                <p className="mt-4 text-xs text-[var(--ink-soft)]">
+                  नमुना समीक्षा:{" "}
+                  <time dateTime={entry.reviewedAt}>
+                    {new Intl.DateTimeFormat("ne-NP", {
+                      dateStyle: "medium",
+                      timeZone: "Asia/Kathmandu",
+                    }).format(new Date(entry.reviewedAt))}
+                  </time>
+                </p>
+                <Link className="mt-4 font-bold" href={`/information-hub/${entry.slug}`}>
+                  सामग्री पढ्नुहोस् →
+                </Link>
+              </article>
+            ))}
+          </section>
+        ) : (
+          <div className="mt-7">
+            <ContentState
+              kind="empty"
+              title="यस प्रकारको नमुना सामग्री उपलब्ध छैन"
+              description="अर्को प्रकार छान्नुहोस् वा सबै जानकारी सामग्री हेर्नुहोस्।"
+            />
+          </div>
+        )}
+        <PageNavigation
+          pageInfo={data.pageInfo}
+          label="जानकारी केन्द्रका पृष्ठहरू"
+          hrefForPage={(page) =>
+            `/information-hub?${selectedType ? `type=${selectedType.query}&` : ""}page=${page}`
+          }
+        />
       </main>
     </>
   );

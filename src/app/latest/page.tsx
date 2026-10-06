@@ -3,7 +3,7 @@ import Link from "next/link";
 import { StoryCard } from "@/components/content/story-card";
 import { PreviewNotice } from "@/components/layout/preview-notice";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { contentGateway } from "@/lib/content/gateway";
 
 export const metadata: Metadata = {
   title: "ताजा समाचार",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LatestPage() {
-  const home = await mockContentGateway.getHome("ne-NP");
+  const home = await contentGateway.getHome("ne-NP");
   return (
     <>
       <PreviewNotice />

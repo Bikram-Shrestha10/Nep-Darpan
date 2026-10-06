@@ -3,19 +3,28 @@ import { notFound } from "next/navigation";
 import { StoryCard } from "@/components/content/story-card";
 import { PreviewNotice } from "@/components/layout/preview-notice";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { mockContentGateway } from "@/lib/content/mock-gateway";
+import { PageNavigation } from "@/components/ui/page-navigation";
+import { contentGateway } from "@/lib/content/gateway";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string | string[] }>;
+};
+function requestedPage(value: string | string[] | undefined): number {
+  if (typeof value !== "string" || !/^[1-9]\d*$/u.test(value)) return 1;
+  const page = Number(value);
+  return Number.isSafeInteger(page) ? page : 1;
+}
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const page = await mockContentGateway.getCategory("ne-NP", slug);
+  const page = await contentGateway.getCategory("ne-NP", slug);
   return page
     ? { title: page.category.name, description: `${page.category.name} का काल्पनिक समाचार नमुना` }
     : { title: "खण्ड भेटिएन" };
 }
-export default async function CategoryPage({ params }: Props) {
-  const { slug } = await params;
-  const page = await mockContentGateway.getCategory("ne-NP", slug);
+export default async function CategoryPage({ params, searchParams }: Props) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  const page = await contentGateway.getCategory("ne-NP", slug, requestedPage(query.page));
   if (!page) notFound();
   return (
     <>
@@ -39,6 +48,11 @@ export default async function CategoryPage({ params }: Props) {
             <StoryCard key={story.id} article={story} />
           ))}
         </section>
+        <PageNavigation
+          pageInfo={page.pageInfo}
+          label={`${page.category.name} समाचार पृष्ठहरू`}
+          hrefForPage={(nextPage) => `/category/${encodeURIComponent(slug)}?page=${nextPage}`}
+        />
       </main>
     </>
   );

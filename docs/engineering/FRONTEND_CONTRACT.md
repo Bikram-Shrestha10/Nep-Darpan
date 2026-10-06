@@ -1,8 +1,8 @@
 # Nep Darpan — Frontend Content and API Contract
 
-Version: 0.1  
-Date: 2026-10-05  
-Status: Phase 0 working contract; backend implementation must preserve these public behavior guarantees.
+Version: 1.0 candidate
+Date: 2026-10-06
+Status: Frontend technical review passed; awaiting product/editorial owner sign-off before Phase 2 uses this as the frozen contract.
 
 ## 1. Purpose
 
@@ -168,8 +168,8 @@ export interface SearchFilters {
   categorySlug?: string;
   kind?: StoryKind;
   sort?: "relevance" | "newest";
-  from?: string; // YYYY-MM-DD
-  to?: string; // YYYY-MM-DD; must not precede from
+  from?: string; // inclusive YYYY-MM-DD in the Asia/Kathmandu calendar
+  to?: string; // inclusive YYYY-MM-DD in the Asia/Kathmandu calendar; must not precede from
   page: number;
 }
 
@@ -218,16 +218,17 @@ export interface ApiProblem {
 
 ## 4. Frontend data gateway
 
-Public Server Components call a server-side gateway interface. During Phase 1, its implementation reads local fictional fixtures. In Phase 2, the same interface reads through authorized server-side data-access modules. Client Components receive only the serializable data needed for their interaction.
+Public Server Components call `contentGateway`, a server-side implementation of `PublicContentGateway`. During Phase 1, `contentGateway` delegates to the local fictional fixture adapter. In Phase 2, replace that adapter in one module with authorized server-side data-access modules. Client Components receive only the serializable data needed for their interaction.
 
 ~~~ts
 export interface PublicContentGateway {
+  listCategories(locale: LocaleCode): Promise<CategorySummary[]>;
   getHome(locale: LocaleCode): Promise<HomePageData>;
   getCategory(locale: LocaleCode, slug: string, page?: number): Promise<CategoryPageData | null>;
   getArticle(locale: LocaleCode, slug: string): Promise<PublishedArticle | null>;
   search(filters: SearchFilters): Promise<SearchPage>;
   getHubEntry(locale: LocaleCode, slug: string): Promise<HubEntry | null>;
-  listHub(locale: LocaleCode, page?: number): Promise<HubPageData>;
+  listHub(locale: LocaleCode, page?: number, kind?: HubEntry["kind"]): Promise<HubPageData>;
 }
 ~~~
 
@@ -248,24 +249,53 @@ The fixture adapter may implement simplified filtering, but it must return the s
 | Frontend view | Gateway method / later data source | Public behavior |
 |---|---|---|
 | Home | `getHome(locale)` | Editor-selected lead, latest, curated trending, sections, breaking, and hub highlights. |
+| Latest feed | `getHome(locale)` | Displays the latest collection in publication-time order; launch curation remains editor-owned. |
 | Category | `getCategory(locale, slug, page)` | Published category collection with stable pagination. |
 | Article | `getArticle(locale, slug)` | Published article with authors, media, sources, correction history, and related stories. |
-| Search | `search(filters)` | URL-backed filters and published-only results. |
-| Information hub | `listHub(locale, page)` / `getHubEntry(locale, slug)` | Explainers, guides, and fact checks with review date and evidence. |
-| About and editorial policy pages | Static, version-controlled content or an approved CMS source | About, contact, editorial standards, corrections, privacy, and terms pages. Do not fill policy pages with invented legal/editorial text. |
+| Search | `search(filters)` plus `listCategories(locale)` | URL-backed query, locale, category, content-kind, date-range, sort, and page values; published-only results. Kathmandu calendar date bounds are inclusive. |
+| Information hub | `listHub(locale, page, kind)` / `getHubEntry(locale, slug)` | Explainers, guides, and fact checks with review date and evidence; type filters and pagination retain URL state. |
+| About, contact, editorial standards, corrections, privacy, and terms | Static, version-controlled content after owner/editor/legal review | Current routes show honest pending-content placeholders; do not fill these pages with invented legal, editorial, ownership, or contact information. |
 | Newsroom prototype | Fixture-only until Phase 2 | No persistence or security claim before authenticated backend is connected. |
+| Article sharing | Browser Web Share API with clipboard fallback | Shares the current article URL; no server endpoint or external provider is required. |
 
 The gateway is an internal application boundary, not a promise that every page must use a browser-facing REST endpoint. The server may render pages by calling domain services directly. Any later HTTP response must preserve these shapes or introduce a reviewed versioned contract. Newsletter and live-data routes/modules are outside the initial frontend contract.
 
-## 7. Frontend contract acceptance checks
+All public reader routes import the stable `contentGateway` adapter rather than the fixture implementation. The search category menu also reads through `listCategories(locale)` so a future provider can supply editor-managed categories without changing the page component.
+
+Category and information-hub pages accept a `page` URL parameter and render previous/next navigation when `pageInfo.totalPages > 1`. Hub `type` filters are allowlisted to `explainer`, `guide`, and `fact_check`; `fact-check` is accepted as the public query spelling and mapped to the typed domain value.
+
+## 7. Backend capabilities assumed by the frontend
+
+Phase 2 must implement these capabilities behind the typed boundary and the newsroom-specific server authorization boundary:
+
+- Return only published, approved, locale-matched public stories and information-hub entries. Unknown, draft, scheduled, or withdrawn slugs return not found publicly.
+- Supply homepage/editorial placements, latest content, categories, category pages, search results, article detail, hub detail, pagination, and metadata from the authoritative store.
+- Interpret `from` and `to` as inclusive publication calendar dates in `Asia/Kathmandu`, validating dates and reversed ranges before querying. Convert those bounds to UTC for storage/index comparisons.
+- Preserve stable story IDs, language-specific slugs, story-group links, publication and update timestamps, labels, cleared media metadata, source references, correction history, and canonical metadata.
+- Authenticate newsroom users and enforce roles server-side and at the database boundary for drafts, preview, review decisions, schedule, publish, correction, archive, placement, and media actions. Frontend visibility is never authorization.
+- Persist revisions and append-only correction/audit records. Review approval is distinct from publication; publication follows the approved editor workflow.
+- Provide an authorized Cloudinary upload-signing/registration flow. The public gateway returns only cleared delivery assets, never Cloudinary secrets or upload signatures.
+- Invalidate the required Next.js and Redis-backed public read surfaces after publish, update, correction, archive, and placement changes. Redis remains a cache, not the source of truth.
+
+The newsroom prototype currently covers visual and interaction states only. Review and version its newsroom read/command contracts before backend implementation; this public gateway does not freeze browser REST endpoints or provider-specific implementation.
+
+## 8. Frontend contract acceptance checks
 
 - Every Phase 1 page and P0 journey maps to a gateway method or an explicitly static content source.
+- Article share links use the current browser URL and native share/copy capabilities; they do not require an integration provider.
+- Search validates calendar dates and range order; the selected date range remains in the URL when paging.
 - Fixtures satisfy the TypeScript types and contain no real-looking unverified reporting, personal data, or live values.
 - Public data shapes cannot encode draft/preview content or expose staff-only fields.
 - Devanagari and Latin content, missing translations, long titles, missing optional media, and corrections have defined UI behavior.
 - Backend can replace the fixture adapter without changing page components or weakening publication/access rules.
 
-## 8. Related documents
+## 9. Freeze and sign-off
+
+Version 1.0 is the technical freeze candidate for frontend-to-backend integration. The route/component mapping, search-date semantics, public projection rules, and backend assumptions above have been reviewed against the implemented UI and PRD. Product/editorial owner sign-off is still required before Task 2.1 begins. After sign-off, any contract change requires an explicit impact review and version update.
+
+The candidate deliberately does not freeze provider-specific HTTP routes, staff command DTOs, identity/session formats, Cloudinary upload-signature payloads, Redis keys, or database schemas. Production Open Graph/structured data, sitemap, robots policy, RSS/Atom generation, and crawl rules are implementation items for Task 2.5 and must use persisted approved content rather than these frontend fixtures.
+
+## 10. Related documents
 
 - [PRD](../product/PRD.md)
 - [TRD](TRD.md)

@@ -21,6 +21,18 @@ export function normalizeSearchText(value: string): string {
     .trim();
 }
 
+function kathmanduCalendarDate(value: string): string {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: "Asia/Kathmandu",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(value));
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((item) => item.type === type)?.value ?? "";
+  return `${part("year")}-${part("month")}-${part("day")}`;
+}
+
 function score(article: ArticleCard, terms: string[]): number {
   const headline = normalizeSearchText(article.headline);
   const summary = normalizeSearchText(article.summary ?? "");
@@ -38,7 +50,9 @@ export function searchFixtureStories(articles: ArticleCard[], filters: SearchFil
   const query = filters.query.trim();
   const normalizedQuery = normalizeSearchText(query);
   const terms = normalizedQuery.split(" ").filter(Boolean);
-  const hasFilters = Boolean(query || filters.categorySlug || filters.kind);
+  const hasFilters = Boolean(
+    query || filters.categorySlug || filters.kind || filters.from || filters.to,
+  );
   const validKind = !filters.kind || searchableKinds.includes(filters.kind);
 
   let matches = articles.filter((article) => {
@@ -46,6 +60,9 @@ export function searchFixtureStories(articles: ArticleCard[], filters: SearchFil
     if (!validKind) return false;
     if (filters.categorySlug && article.category.slug !== filters.categorySlug) return false;
     if (filters.kind && article.kind !== filters.kind) return false;
+    const publishedDate = kathmanduCalendarDate(article.publishedAt);
+    if (filters.from && publishedDate < filters.from) return false;
+    if (filters.to && publishedDate > filters.to) return false;
     if (!hasFilters) return false;
     if (query.length > FIXTURE_QUERY_MAX_LENGTH || (query && !terms.length)) return false;
     const indexed = normalizeSearchText(

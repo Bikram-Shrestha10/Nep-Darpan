@@ -289,13 +289,28 @@ export class LocaleUnavailableError extends Error {
 }
 
 export const mockContentGateway: PublicContentGateway = {
+  async listCategories(locale) {
+    if (locale !== "ne-NP") return [];
+    return structuredClone(MOCK_SEARCH_CATEGORIES);
+  },
   async getHome(locale) {
     if (locale !== "ne-NP") throw new LocaleUnavailableError(locale);
     return structuredClone(homePage);
   },
-  async getCategory(locale, slug) {
+  async getCategory(locale, slug, requestedPage = 1) {
     if (locale !== "ne-NP") return null;
-    return structuredClone(categoryData[slug] ?? null);
+    const source = categoryData[slug];
+    if (!source) return null;
+    const pageSize = source.pageInfo.pageSize;
+    const totalItems = source.articles.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const page = Math.max(1, Math.min(requestedPage, Math.max(totalPages, 1)));
+    const start = (page - 1) * pageSize;
+    return {
+      ...structuredClone(source),
+      articles: structuredClone(source.articles.slice(start, start + pageSize)),
+      pageInfo: { page, pageSize, totalItems, totalPages },
+    };
   },
   async getArticle(locale, slug) {
     if (locale !== "ne-NP") return null;
@@ -328,17 +343,23 @@ export const mockContentGateway: PublicContentGateway = {
     if (locale !== "ne-NP") return null;
     return structuredClone(hubEntries.find((entry) => entry.slug === slug) ?? null);
   },
-  async listHub(locale, page = 1) {
+  async listHub(locale, page = 1, kind) {
     if (locale !== "ne-NP")
       return {
         locale,
         entries: [],
-        pageInfo: { page, pageSize: 10, totalItems: 0, totalPages: 0 },
+        pageInfo: { page: 1, pageSize: 10, totalItems: 0, totalPages: 0 },
       };
+    const pageSize = 10;
+    const matchingEntries = kind ? hubEntries.filter((entry) => entry.kind === kind) : hubEntries;
+    const totalItems = matchingEntries.length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const currentPage = Math.max(1, Math.min(page, Math.max(totalPages, 1)));
+    const start = (currentPage - 1) * pageSize;
     return {
       locale,
-      entries: structuredClone(hubEntries),
-      pageInfo: { page, pageSize: 10, totalItems: hubEntries.length, totalPages: 1 },
+      entries: structuredClone(matchingEntries.slice(start, start + pageSize)),
+      pageInfo: { page: currentPage, pageSize, totalItems, totalPages },
     };
   },
 };
