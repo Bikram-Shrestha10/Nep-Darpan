@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { LocalizedText, useSitePreferences } from "@/components/layout/site-preferences";
 
 export function ArticleShare() {
+  const { language } = useSitePreferences();
   const [message, setMessage] = useState("");
 
   async function shareArticle() {
@@ -10,7 +12,7 @@ export function ArticleShare() {
     try {
       if (navigator.share) {
         await navigator.share(shareData);
-        setMessage("साझा मेनु खोलियो।");
+        setMessage(language === "en" ? "Share menu opened." : "साझा मेनु खोलियो।");
         return;
       }
     } catch (error) {
@@ -19,16 +21,20 @@ export function ArticleShare() {
 
     try {
       await navigator.clipboard.writeText(shareData.url);
-      setMessage("समाचारको लिङ्क प्रतिलिपि गरियो।");
+      setMessage(language === "en" ? "Story link copied." : "समाचारको लिङ्क प्रतिलिपि गरियो।");
     } catch {
-      setMessage("लिङ्क प्रतिलिपि गर्न सकिएन। ब्राउजर ठेगानाबाट यो पृष्ठ साझा गर्नुहोस्।");
+      setMessage(
+        language === "en"
+          ? "Could not copy the link. Share this page using the browser address."
+          : "लिङ्क प्रतिलिपि गर्न सकिएन। ब्राउजर ठेगानाबाट यो पृष्ठ साझा गर्नुहोस्।",
+      );
     }
   }
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       <button className="button-secondary" onClick={shareArticle} type="button">
-        समाचार साझा गर्नुहोस्
+        <LocalizedText ne="समाचार साझा गर्नुहोस्" />
       </button>
       {message ? (
         <p className="text-sm text-[var(--ink-soft)]" role="status">

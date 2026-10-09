@@ -10,7 +10,7 @@ Deliver a fast, trusted responsive news and information website with a secure ne
 
 ## 2. Assumptions
 
-- The site is Nepali-first and has a locale-aware content model. Nepali is the default route; English is supported when a reviewed translation exists.
+- The site is Nepali-first and has a locale-aware content model. The interface can switch between Nepali and English; English fixture renderings are preview copy only. Published story content in English requires a separately reviewed translation.
 - Reader and newsroom experiences are responsive web pages for phone, tablet, and desktop browsers. Native iOS and Android applications are outside the current scope.
 - Next.js is the full-stack React application, not merely an API server behind a standalone React SPA.
 - TypeScript with strict type checking is required for application, newsroom, and integration code.

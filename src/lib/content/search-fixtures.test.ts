@@ -28,6 +28,11 @@ describe("fictional search adapter", () => {
     expect(result.results.map((article) => article.slug)).toContain("demo-opinion");
   });
 
+  it("matches English queries against the labeled English preview of Nepali fixtures", async () => {
+    const result = await mockContentGateway.search({ ...baseFilters, query: "library" });
+    expect(result.results.map((article) => article.slug)).toContain("demo-story");
+  });
+
   it("applies category, content kind, and locale filters", async () => {
     const categoryResults = await mockContentGateway.search({
       ...baseFilters,
@@ -39,9 +44,9 @@ describe("fictional search adapter", () => {
     const combined = await mockContentGateway.search({
       ...baseFilters,
       categorySlug: "economy",
-      kind: "news",
+      kind: "fact_check",
     });
-    expect(combined.pageInfo.totalItems).toBe(0);
+    expect(combined.pageInfo.totalItems).toBe(1);
     const english = await mockContentGateway.search({
       ...baseFilters,
       query: "opinion",
@@ -57,7 +62,8 @@ describe("fictional search adapter", () => {
       from: "2026-10-05",
       to: "2026-10-05",
     });
-    expect(result.pageInfo.totalItems).toBe(2);
+    // Opinion preview fixtures also appear in the all-site search date window.
+    expect(result.pageInfo.totalItems).toBe(5);
     expect(result.filters).toMatchObject({ from: "2026-10-05", to: "2026-10-05" });
     expect(result.results.every((story) => story.publishedAt.slice(0, 10) === "2026-10-05")).toBe(
       true,
@@ -89,7 +95,9 @@ describe("fictional search adapter", () => {
       sort: "newest",
       page: 2,
     });
-    expect(first.pageInfo.totalPages).toBe(2);
+    expect(first.pageInfo.totalPages).toBe(
+      Math.ceil(first.pageInfo.totalItems / first.pageInfo.pageSize),
+    );
     expect(first.results).toHaveLength(3);
     const publishedTimes = first.results.map((article) => Date.parse(article.publishedAt));
     expect(publishedTimes).toEqual([...publishedTimes].sort((left, right) => right - left));
@@ -98,7 +106,7 @@ describe("fictional search adapter", () => {
     expect(second.pageInfo.page).toBe(2);
     expect(second.results).toHaveLength(3);
     const overflow = await mockContentGateway.search({ ...baseFilters, query: "नमुना", page: 99 });
-    expect(overflow.pageInfo.page).toBe(2);
+    expect(overflow.pageInfo.page).toBe(overflow.pageInfo.totalPages);
   });
 
   it("returns no hits for empty punctuation and oversized query input", async () => {

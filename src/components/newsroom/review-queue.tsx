@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { NewsroomStoryFixture } from "@/lib/newsroom/fixtures";
 import { useNewsroomPrototype } from "@/components/newsroom/newsroom-prototype-provider";
+import { LocalizedText } from "@/components/layout/site-preferences";
 
 export function ReviewQueue({ stories }: { stories: NewsroomStoryFixture[] }) {
   const [decisions, setDecisions] = useState<Record<string, "approved" | "returned">>({});
@@ -32,36 +33,48 @@ export function ReviewQueue({ stories }: { stories: NewsroomStoryFixture[] }) {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="eyebrow">
-                  {story.category} · {story.author}
+                  <LocalizedText ne={story.category} /> · <LocalizedText ne={story.author} />
                 </p>
-                <h2 className="editorial-heading mt-2 text-xl font-bold">{story.title}</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">{story.summary}</p>
+                <h2 className="editorial-heading mt-2 text-xl font-bold">
+                  <LocalizedText ne={story.title} />
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">
+                  <LocalizedText ne={story.summary} />
+                </p>
               </div>
               <span className="story-label">
-                {decision === "approved"
-                  ? "स्वीकृत (नमुना)"
-                  : decision === "returned"
-                    ? "सुधारका लागि फिर्ता (नमुना)"
-                    : "समीक्षामा"}
+                <LocalizedText
+                  ne={
+                    decision === "approved"
+                      ? "स्वीकृत (नमुना)"
+                      : decision === "returned"
+                        ? "सुधारका लागि फिर्ता (नमुना)"
+                        : "समीक्षामा"
+                  }
+                />
               </span>
             </div>
             {decision ? (
               <p className="mt-4 text-sm" role="status">
-                {decision === "approved"
-                  ? "स्वीकृति अवस्था यो पृष्ठमा मात्र देखाइएको छ; समाचार प्रकाशित भएको छैन।"
-                  : "फिर्ता अवस्था यो पृष्ठमा मात्र देखाइएको छ; संवाददाता वा डाटाबेसलाई केही पठाइएको छैन।"}
+                <LocalizedText
+                  ne={
+                    decision === "approved"
+                      ? "स्वीकृति अवस्था यो पृष्ठमा मात्र देखाइएको छ; समाचार प्रकाशित भएको छैन।"
+                      : "फिर्ता अवस्था यो पृष्ठमा मात्र देखाइएको छ; संवाददाता वा डाटाबेसलाई केही पठाइएको छैन।"
+                  }
+                />
               </p>
             ) : (
               <div className="mt-4 flex flex-wrap gap-3">
                 <button className="button-primary" onClick={() => decide("approved")} type="button">
-                  स्वीकृति नमुना
+                  <LocalizedText ne="स्वीकृति नमुना" />
                 </button>
                 <button
                   className="button-secondary"
                   onClick={() => decide("returned")}
                   type="button"
                 >
-                  सुधारका लागि फिर्ता
+                  <LocalizedText ne="सुधारका लागि फिर्ता" />
                 </button>
               </div>
             )}

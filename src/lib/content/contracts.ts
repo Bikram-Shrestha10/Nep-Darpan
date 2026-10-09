@@ -25,7 +25,9 @@ export interface ImageMedia {
   kind: "image";
   src: string;
   alt: string;
+  altEn?: string;
   caption?: string;
+  captionEn?: string;
   credit?: string;
   width: number;
   height: number;
@@ -37,7 +39,9 @@ export interface VideoMedia {
   src: string;
   poster: ImageMedia;
   title: string;
+  titleEn?: string;
   caption?: string;
+  captionEn?: string;
   credit?: string;
   durationSeconds?: number;
   captionsUrl?: string;
@@ -69,6 +73,15 @@ export interface ArticleCard {
   labels: EditorialLabel[];
   leadMedia?: PublicMedia;
   hasCorrection: boolean;
+}
+
+export interface ReelCard {
+  id: string;
+  headline: string;
+  headlineEn?: string;
+  href: string;
+  category: CategorySummary;
+  media?: VideoMedia;
 }
 
 export type ArticleBodyBlock =
@@ -147,6 +160,7 @@ export interface HomePageData {
   lead?: ArticleCard;
   latest: ArticleCard[];
   trending: ArticleCard[];
+  reels: ReelCard[];
   sections: Array<{
     category: CategorySummary;
     lead?: ArticleCard;

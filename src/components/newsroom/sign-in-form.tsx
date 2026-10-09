@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { LocalizedText } from "@/components/layout/site-preferences";
 
 export function SignInForm() {
   const [message, setMessage] = useState("");
@@ -13,7 +14,7 @@ export function SignInForm() {
     <form className="grid max-w-xl gap-4" onSubmit={handleSubmit}>
       <div>
         <label className="eyebrow mb-2 block" htmlFor="staff-email">
-          इमेल
+          <LocalizedText ne="इमेल" />
         </label>
         <input
           className="field"
@@ -26,7 +27,7 @@ export function SignInForm() {
       </div>
       <div>
         <label className="eyebrow mb-2 block" htmlFor="staff-password">
-          पासवर्ड
+          <LocalizedText ne="पासवर्ड" />
         </label>
         <input
           className="field"
@@ -39,11 +40,11 @@ export function SignInForm() {
         />
       </div>
       <button className="button-primary w-fit" type="submit">
-        साइन इन प्रयास गर्नुहोस्
+        <LocalizedText ne="साइन इन प्रयास गर्नुहोस्" />
       </button>
       {message ? (
         <p className="state-panel text-sm leading-6" role="status">
-          {message}
+          <LocalizedText ne={message} />
         </p>
       ) : null}
     </form>

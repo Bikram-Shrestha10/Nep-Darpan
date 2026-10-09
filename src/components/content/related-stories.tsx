@@ -2,6 +2,7 @@ import type { ArticleCard } from "@/lib/content/contracts";
 import { useId } from "react";
 import { StoryCard } from "@/components/content/story-card";
 import { ContentState } from "@/components/ui/content-state";
+import { LocalizedText } from "@/components/layout/site-preferences";
 
 export function RelatedStories({
   articles,
@@ -14,7 +15,7 @@ export function RelatedStories({
   return (
     <section className="related-stories" aria-labelledby={headingId}>
       <h2 id={headingId} className="editorial-heading related-stories__title">
-        {title}
+        <LocalizedText ne={title} />
       </h2>
       {articles.length ? (
         <div className="related-stories__list">

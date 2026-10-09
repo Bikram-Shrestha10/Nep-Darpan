@@ -3,6 +3,8 @@ import type { ReactNode } from "react";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SitePreferencesProvider } from "@/components/layout/site-preferences";
+import { LocalizedText } from "@/components/layout/site-preferences";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,17 +17,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="ne-NP" data-scroll-behavior="smooth">
+    <html lang="ne-NP" translate="no" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="antialiased">
-        <a className="skip-link" href="#main-content">
-          मुख्य सामग्रीमा जानुहोस्
-        </a>
-        <SiteHeader />
-        {children}
-        <div id="site-footer">
-          <SiteFooter />
-        </div>
-        <MobileNavigation />
+        <SitePreferencesProvider>
+          <a className="skip-link" href="#main-content">
+            <LocalizedText ne="मुख्य सामग्रीमा जानुहोस्" />
+          </a>
+          <div className="reader-site-chrome">
+            <SiteHeader />
+          </div>
+          {children}
+          <div className="reader-site-chrome" id="site-footer">
+            <SiteFooter />
+          </div>
+          <div className="reader-site-chrome">
+            <MobileNavigation />
+          </div>
+        </SitePreferencesProvider>
       </body>
     </html>
   );

@@ -1,35 +1,46 @@
+"use client";
+
 import Link from "next/link";
+import {
+  LocalizedNumber,
+  LocalizedText,
+  useSitePreferences,
+} from "@/components/layout/site-preferences";
 import type { PageInfo } from "@/lib/content/contracts";
 
 export function PageNavigation({
   pageInfo,
   label,
-  hrefForPage,
+  labelEn,
+  previousHref,
+  nextHref,
 }: {
   pageInfo: PageInfo;
   label: string;
-  hrefForPage: (page: number) => string;
+  labelEn?: string;
+  previousHref?: string;
+  nextHref?: string;
 }) {
+  const { language } = useSitePreferences();
   if (pageInfo.totalPages <= 1) return null;
-  const number = new Intl.NumberFormat("ne-NP");
-
   return (
     <nav
       className="mt-7 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--rule)] pt-4"
-      aria-label={label}
+      aria-label={language === "en" ? `${labelEn ?? label} navigation` : label}
     >
       <p className="text-sm">
-        पृष्ठ {number.format(pageInfo.page)} / {number.format(pageInfo.totalPages)}
+        <LocalizedText ne="पृष्ठ" /> <LocalizedNumber value={pageInfo.page} /> /{" "}
+        <LocalizedNumber value={pageInfo.totalPages} />
       </p>
       <div className="flex gap-2">
-        {pageInfo.page > 1 ? (
-          <Link className="button-secondary" href={hrefForPage(pageInfo.page - 1)}>
-            ← अघिल्लो
+        {previousHref ? (
+          <Link className="button-secondary" href={previousHref}>
+            ← <LocalizedText ne="अघिल्लो" />
           </Link>
         ) : null}
-        {pageInfo.page < pageInfo.totalPages ? (
-          <Link className="button-primary" href={hrefForPage(pageInfo.page + 1)}>
-            अर्को →
+        {nextHref ? (
+          <Link className="button-primary" href={nextHref}>
+            <LocalizedText ne="अर्को" /> →
           </Link>
         ) : null}
       </div>

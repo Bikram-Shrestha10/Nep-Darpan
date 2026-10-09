@@ -1,6 +1,7 @@
 import type { SourceReference } from "@/lib/content/contracts";
 import { useId } from "react";
 import { PublishedTime } from "@/components/content/story-metadata";
+import { LocalizedText } from "@/components/layout/site-preferences";
 
 function safeHttpUrl(value: string): string | null {
   try {
@@ -17,7 +18,7 @@ export function SourceAttribution({ sources }: { sources: SourceReference[] }) {
   return (
     <section className="source-attribution" aria-labelledby={headingId}>
       <h2 id={headingId} className="eyebrow">
-        स्रोत र सन्दर्भ
+        <LocalizedText ne="स्रोत र सन्दर्भ" />
       </h2>
       <ul className="source-attribution__list">
         {sources.map((source) => {
@@ -27,13 +28,17 @@ export function SourceAttribution({ sources }: { sources: SourceReference[] }) {
               <span>
                 {href ? (
                   <a href={href} rel="noreferrer noopener" target="_blank">
-                    {source.label}
+                    <LocalizedText ne={source.label} />
                   </a>
                 ) : (
-                  source.label
+                  <LocalizedText ne={source.label} />
                 )}
               </span>
-              {source.publisher ? <span>{source.publisher}</span> : null}
+              {source.publisher ? (
+                <span>
+                  <LocalizedText ne={source.publisher} />
+                </span>
+              ) : null}
               {source.accessedAt ? <PublishedTime value={source.accessedAt} label="हेरेको" /> : null}
             </li>
           );

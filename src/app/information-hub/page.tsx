@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PreviewNotice } from "@/components/layout/preview-notice";
+import { LocalizedDate, LocalizedText } from "@/components/layout/site-preferences";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ContentState } from "@/components/ui/content-state";
 import { PageNavigation } from "@/components/ui/page-navigation";
@@ -39,14 +40,20 @@ export default async function InformationHubPage({ searchParams }: Props) {
       <main id="main-content" tabIndex={-1} className="page-shell py-8 sm:py-12">
         <Breadcrumbs items={[{ label: "गृहपृष्ठ", href: "/" }, { label: "जानकारी केन्द्र" }]} />
         <header className="mt-8 border-b-4 border-[var(--ink)] pb-5">
-          <p className="eyebrow">सन्दर्भ, व्याख्या र उपयोगी जानकारी</p>
-          <h1 className="editorial-heading mt-2 text-4xl font-bold sm:text-5xl">जानकारी केन्द्र</h1>
+          <p className="eyebrow">
+            <LocalizedText ne="सन्दर्भ, व्याख्या र उपयोगी जानकारी" />
+          </p>
+          <h1 className="editorial-heading mt-2 text-4xl font-bold sm:text-5xl">
+            <LocalizedText ne="जानकारी केन्द्र" />
+          </h1>
           <p className="mt-3 max-w-3xl leading-7 text-[var(--ink-soft)]">
-            समाचारको पृष्ठभूमि बुझ्न सहयोग गर्ने सामग्रीका लागि समर्पित ठाउँ। तलका सबै सामग्री पृष्ठ संरचना जाँच्न
-            बनाइएका काल्पनिक नमुना हुन्।
+            <LocalizedText ne="समाचारको पृष्ठभूमि बुझ्न सहयोग गर्ने सामग्रीका लागि समर्पित ठाउँ। तलका सबै सामग्री पृष्ठ संरचना जाँच्न बनाइएका काल्पनिक नमुना हुन्।" />
           </p>
         </header>
-        <nav className="mt-5 flex flex-wrap gap-2" aria-label="जानकारी सामग्रीको प्रकार">
+        <nav className="mt-5 flex flex-wrap gap-2" aria-labelledby="information-types-label">
+          <span className="sr-only" id="information-types-label">
+            <LocalizedText ne="जानकारी सामग्रीको प्रकार" />
+          </span>
           {typeFilters.map((filter) => {
             const href = filter.query
               ? `/information-hub?type=${filter.query}`
@@ -59,7 +66,7 @@ export default async function InformationHubPage({ searchParams }: Props) {
                 href={href}
                 key={filter.query || "all"}
               >
-                {filter.label}
+                <LocalizedText ne={filter.label} />
               </Link>
             );
           })}
@@ -67,31 +74,35 @@ export default async function InformationHubPage({ searchParams }: Props) {
         {data.entries.length ? (
           <section
             className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-            aria-label="जानकारी केन्द्रका सामग्री"
+            aria-labelledby="information-content-label"
           >
+            <h2 className="sr-only" id="information-content-label">
+              <LocalizedText ne="जानकारी केन्द्रका सामग्री" />
+            </h2>
             {data.entries.map((entry) => (
               <article
                 key={entry.id}
                 className="flex flex-col border border-[var(--rule)] bg-[var(--paper-raised)] p-5"
               >
-                <p className="eyebrow">{label(entry.kind)}</p>
+                <p className="eyebrow">
+                  <LocalizedText ne={label(entry.kind)} />
+                </p>
                 <h2 className="editorial-heading mt-3 text-2xl font-bold leading-snug">
-                  <Link href={`/information-hub/${entry.slug}`}>{entry.title}</Link>
+                  <Link href={`/information-hub/${entry.slug}`}>
+                    <LocalizedText ne={entry.title} />
+                  </Link>
                 </h2>
                 <p className="mt-3 flex-1 text-sm leading-7 text-[var(--ink-soft)]">
-                  {entry.summary}
+                  <LocalizedText ne={entry.summary} />
                 </p>
                 <p className="mt-4 text-xs text-[var(--ink-soft)]">
-                  नमुना समीक्षा:{" "}
+                  <LocalizedText ne="नमुना समीक्षा:" />{" "}
                   <time dateTime={entry.reviewedAt}>
-                    {new Intl.DateTimeFormat("ne-NP", {
-                      dateStyle: "medium",
-                      timeZone: "Asia/Kathmandu",
-                    }).format(new Date(entry.reviewedAt))}
+                    <LocalizedDate value={entry.reviewedAt} />
                   </time>
                 </p>
                 <Link className="mt-4 font-bold" href={`/information-hub/${entry.slug}`}>
-                  सामग्री पढ्नुहोस् →
+                  <LocalizedText ne="सामग्री पढ्नुहोस् →" />
                 </Link>
               </article>
             ))}
@@ -108,8 +119,16 @@ export default async function InformationHubPage({ searchParams }: Props) {
         <PageNavigation
           pageInfo={data.pageInfo}
           label="जानकारी केन्द्रका पृष्ठहरू"
-          hrefForPage={(page) =>
-            `/information-hub?${selectedType ? `type=${selectedType.query}&` : ""}page=${page}`
+          labelEn="Information hub pages"
+          previousHref={
+            data.pageInfo.page > 1
+              ? `/information-hub?${selectedType ? `type=${selectedType.query}&` : ""}page=${data.pageInfo.page - 1}`
+              : undefined
+          }
+          nextHref={
+            data.pageInfo.page < data.pageInfo.totalPages
+              ? `/information-hub?${selectedType ? `type=${selectedType.query}&` : ""}page=${data.pageInfo.page + 1}`
+              : undefined
           }
         />
       </main>

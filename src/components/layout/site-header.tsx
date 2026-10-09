@@ -1,34 +1,41 @@
+"use client";
+
 import Link from "next/link";
-import { MenuIcon, SearchIcon } from "@/components/layout/icons";
+import Image from "next/image";
+import { BellIcon, MenuIcon, SearchIcon } from "@/components/layout/icons";
+import { LocalizedText, useSitePreferences } from "@/components/layout/site-preferences";
+import { SiteUtilityBar } from "@/components/layout/site-utility-bar";
 
 export const primaryNavigation = [
-  { href: "/", label: "गृहपृष्ठ" },
-  { href: "/latest", label: "ताजा" },
-  { href: "/category/politics", label: "राजनीति" },
-  { href: "/category/economy", label: "अर्थतन्त्र" },
-  { href: "/category/society", label: "समाज" },
-  { href: "/category/world", label: "विश्व" },
-  { href: "/category/technology", label: "प्रविधि" },
-  { href: "/category/opinion", label: "विचार" },
-  { href: "/information-hub", label: "जानकारी केन्द्र" },
+  { href: "/", ne: "गृहपृष्ठ", en: "Home" },
+  { href: "/latest", ne: "ताजा", en: "Latest" },
+  { href: "/category/politics", ne: "राजनीति", en: "Politics" },
+  { href: "/category/economy", ne: "अर्थतन्त्र", en: "Economy" },
+  { href: "/category/society", ne: "समाज", en: "Society" },
+  { href: "/category/world", ne: "विश्व", en: "World" },
+  { href: "/category/technology", ne: "प्रविधि", en: "Technology" },
+  { href: "/category/opinion", ne: "विचार", en: "Opinion" },
+  { href: "/information-hub", ne: "जानकारी केन्द्र", en: "Information hub" },
 ] as const;
 
 export function SiteHeader() {
+  const { language } = useSitePreferences();
   return (
-    <header className="border-b border-[var(--rule-strong)] bg-[var(--paper)]">
-      <div className="page-shell flex min-h-9 items-center justify-between border-b border-[var(--rule)] py-1 text-[0.72rem] text-[var(--ink-soft)]">
-        <p>नेपालको समाचार र जानकारी</p>
-        <p className="hidden sm:block">नेपाली संस्करण</p>
-      </div>
-      <div className="page-shell grid min-h-24 grid-cols-[2.75rem_1fr_2.75rem] items-center gap-3 py-3 md:min-h-32 md:grid-cols-[1fr_auto_1fr]">
-        <details className="relative md:hidden">
-          <summary className="flex size-11 cursor-pointer list-none items-center justify-center border border-[var(--rule)] [&::-webkit-details-marker]:hidden">
+    <header className="site-header">
+      <SiteUtilityBar />
+      <div className="page-shell site-header__main">
+        <details className="site-header__menu">
+          <summary className="flex size-10 cursor-pointer list-none items-center justify-center border border-[var(--rule)] bg-[var(--paper-raised)] [&::-webkit-details-marker]:hidden">
             <MenuIcon />
-            <span className="sr-only">मुख्य मेनु खोल्नुहोस्</span>
+            <span className="sr-only">
+              <LocalizedText ne="मुख्य मेनु खोल्नुहोस्" en="Open main menu" />
+            </span>
           </summary>
           <nav
-            aria-label="सानो पर्दाको मुख्य नेभिगेसन"
-            className="absolute top-[calc(100%+0.5rem)] left-0 z-30 w-[min(19rem,calc(100vw-2rem))] border-2 border-[var(--ink)] bg-[var(--paper-raised)] p-2"
+            aria-label={
+              language === "en" ? "Responsive primary navigation" : "सानो पर्दाको मुख्य नेभिगेसन"
+            }
+            className="absolute top-[calc(100%+0.5rem)] left-0 z-30 w-[min(19rem,calc(100vw-2rem))] border border-[var(--ink)] bg-[var(--paper-raised)] p-2 shadow-lg"
           >
             <ul className="divide-y divide-[var(--rule)]">
               {primaryNavigation.map((item) => (
@@ -37,42 +44,87 @@ export function SiteHeader() {
                     className="block px-3 py-3 font-semibold hover:bg-[var(--paper-muted)]"
                     href={item.href}
                   >
-                    {item.label}
+                    <LocalizedText ne={item.ne} en={item.en} />
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
         </details>
-        <p className="hidden text-xs font-bold tracking-[0.12em] md:block">समाचार र सन्दर्भ</p>
         <Link
-          className="justify-self-center text-center no-underline"
+          className="site-brand no-underline"
           href="/"
-          aria-label="नेप दर्पण गृहपृष्ठ"
+          aria-label={language === "en" ? "Nep Darpan home" : "नेप दर्पण गृहपृष्ठ"}
         >
-          <span className="editorial-heading block text-[clamp(2rem,5vw,4rem)] font-black leading-none tracking-[-0.045em]">
-            नेप दर्पण
+          <span aria-hidden="true" className="site-brand__logo-slot">
+            <Image
+              alt=""
+              className="site-brand__logo"
+              height={1254}
+              sizes="10rem"
+              src="/logo.jpg"
+              width={1254}
+            />
           </span>
-          <span className="mt-1 block text-[0.58rem] font-bold tracking-[0.24em] text-[var(--ink-soft)] uppercase">
-            Nep Darpan
+          <span className="site-brand__copy">
+            <span className="editorial-heading site-brand__nepali">
+              {language === "en" ? "NEP DARPAN" : "नेप दर्पण"}
+            </span>
+            <span className="site-brand__english">
+              NEP DARPAN · <LocalizedText ne="समाचार र सन्दर्भ" en="News and information" />
+            </span>
           </span>
         </Link>
-        <div className="justify-self-end">
+        <div className="site-header__actions">
           <Link
-            className="flex size-11 items-center justify-center border border-[var(--rule)] hover:bg-[var(--paper-muted)]"
+            className="flex size-10 items-center justify-center border border-[var(--rule)] bg-[var(--paper-raised)] hover:bg-[var(--paper-muted)]"
             href="/search"
-            aria-label="समाचार खोज्नुहोस्"
+            aria-label={language === "en" ? "Search news" : "समाचार खोज्नुहोस्"}
           >
             <SearchIcon />
           </Link>
+          <details className="site-header__notification">
+            <summary
+              aria-label={language === "en" ? "Open notifications" : "सूचनाहरू खोल्नुहोस्"}
+              className="site-header__notification-trigger"
+            >
+              <BellIcon />
+              <span className="sr-only">
+                <LocalizedText ne="सूचनाहरू खोल्नुहोस्" en="Open notifications" />
+              </span>
+            </summary>
+            <section
+              aria-labelledby="site-notification-heading"
+              className="site-header__notification-panel"
+            >
+              <h2 id="site-notification-heading">
+                <LocalizedText ne="सूचनाहरू" en="Notifications" />
+              </h2>
+              <p>
+                <LocalizedText
+                  ne="यो पूर्वावलोकनमा सूचना सुविधा उपलब्ध छैन।"
+                  en="Notifications are not available in this preview yet."
+                />
+              </p>
+              <p>
+                <LocalizedText
+                  ne="सूचनाहरू उपलब्ध भएपछि यहाँ देखिनेछन्।"
+                  en="Updates will appear here when notifications are enabled."
+                />
+              </p>
+            </section>
+          </details>
         </div>
       </div>
-      <nav aria-label="मुख्य नेभिगेसन" className="rule-double hidden md:block">
-        <ul className="page-shell flex min-h-12 items-center justify-center gap-x-6 overflow-x-auto text-sm font-bold whitespace-nowrap">
+      <nav
+        aria-label={language === "en" ? "Primary navigation" : "मुख्य नेभिगेसन"}
+        className="site-primary-nav hidden md:block"
+      >
+        <ul className="page-shell flex min-h-11 items-center gap-x-7 overflow-x-auto text-sm font-bold whitespace-nowrap">
           {primaryNavigation.map((item) => (
             <li key={item.href}>
               <Link className="py-3 no-underline hover:underline" href={item.href}>
-                {item.label}
+                <LocalizedText ne={item.ne} en={item.en} />
               </Link>
             </li>
           ))}

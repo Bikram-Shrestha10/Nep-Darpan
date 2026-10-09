@@ -22,7 +22,7 @@ Be a dependable daily source for Nepali readers who want current affairs reporte
 
 - **Trust before velocity:** publish promptly while preserving authorship, timestamps, sourcing, correction history, and editorial control.
 - **Clarity over clutter:** prioritize the lead story and useful context; keep urgent markers rare and meaningful.
-- **Nepali-first, bilingual-ready:** make Devanagari typography, search, metadata, and workflows first-class. English is shown only when a separately reviewed translation exists.
+- **Nepali-first, bilingual-ready:** make Devanagari typography, search, metadata, and workflows first-class. Readers can switch the full interface to English. English renderings of built-in fictional fixtures are preview translations only; published story content in English requires its own editorially reviewed translation.
 - **Useful beyond the headline:** connect breaking coverage to explainers, fact checks, data, and related reporting.
 - **Fast on mobile networks:** server-render primary content, optimize images, and keep interaction code small.
 - **Newsroom-owned ranking:** let editors control the lead and urgent stories. Use audience analytics as a signal, not as the sole definition of importance.
@@ -126,7 +126,7 @@ Priority: P0 required for launch; P1 planned next; P2 future.
 | PR-06 | P0 | Search returns published material only, supports selected filters, preserves query in the URL, and has loading, error, empty, and no-results states. Nepali and English quality is measured separately. |
 | PR-07 | P0 | Editors can publish evergreen hub pages and link them to stories and topics. Fact-check items show scope, evidence, review date, and conclusion under a newsroom-approved standard. |
 | PR-08 | P1 | If approved live indicators are added, each shows provider/source, unit or currency, and last-updated time. Stale or unavailable data is labeled; invented values are never substituted. |
-| PR-09 | P0 | A reader can change language where a reviewed translation exists. Where none exists, the product routes clearly to an available edition without implying translation. |
+| PR-09 | P0 | A reader can switch the full interface between Nepali and English. Published story content appears in English only when a separate reviewed translation exists; otherwise the interface clearly identifies the available source edition and does not imply the story has been translated. |
 | PR-10 | P0 | Editors can upload/select approved images and video through Cloudinary. PostgreSQL records Cloudinary asset identifiers plus status, alt text, caption, credit, source, license/rights, dimensions, and duration where applicable. Only cleared media can be published. |
 | PR-11 | P1 | If newsletter signup is added after provider and privacy approval, a reader can submit an address with explicit consent, receive a clear result, and unsubscribe later. |
 | PR-12 | P0 | Staff can sign in. The application enforces permissions on the server and in database policies, not only by hiding controls. |

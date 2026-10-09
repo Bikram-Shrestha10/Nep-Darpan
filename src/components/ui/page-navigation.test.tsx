@@ -9,7 +9,8 @@ describe("page navigation", () => {
       <PageNavigation
         pageInfo={{ page: 2, pageSize: 10, totalItems: 30, totalPages: 3 }}
         label="अर्थतन्त्र समाचार पृष्ठहरू"
-        hrefForPage={(page) => `/category/economy?page=${page}`}
+        previousHref="/category/economy?page=1"
+        nextHref="/category/economy?page=3"
       />,
     );
 
@@ -31,7 +32,6 @@ describe("page navigation", () => {
       <PageNavigation
         pageInfo={{ page: 1, pageSize: 10, totalItems: 3, totalPages: 1 }}
         label="जानकारी केन्द्रका पृष्ठहरू"
-        hrefForPage={(page) => `/information-hub?page=${page}`}
       />,
     );
     expect(container).toBeEmptyDOMElement();

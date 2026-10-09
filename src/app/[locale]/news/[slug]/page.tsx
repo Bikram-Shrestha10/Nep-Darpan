@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/content/article-body";
-import { ArticleMedia } from "@/components/content/article-media";
+import { ArticleMedia, MediaSlot } from "@/components/content/article-media";
 import { ArticleShare } from "@/components/content/article-share";
 import { CorrectionNoticePanel } from "@/components/content/correction-notice";
 import { RelatedStories } from "@/components/content/related-stories";
@@ -14,6 +14,7 @@ import {
   PublishedTime,
 } from "@/components/content/story-metadata";
 import { PreviewNotice } from "@/components/layout/preview-notice";
+import { LocalizedText } from "@/components/layout/site-preferences";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import type { LocaleCode } from "@/lib/content/contracts";
 import { contentGateway } from "@/lib/content/gateway";
@@ -52,17 +53,17 @@ export default async function ArticlePage({ params }: Props) {
             { label: article.headline },
           ]}
         />
-        <article className="mx-auto mt-8 max-w-5xl">
-          <header className="border-b-4 border-[var(--ink)] pb-6">
+        <article className="article-page mx-auto mt-8 max-w-5xl">
+          <header className="article-page__header border-b-4 border-[var(--ink)] pb-6">
             <div className="flex flex-wrap gap-2">
               <CategoryTag category={article.category} />
               <EditorialTags labels={article.labels} kind={article.kind} />
             </div>
-            <h1 className="editorial-heading mt-4 text-3xl font-bold leading-tight sm:text-5xl">
-              {article.headline}
+            <h1 className="article-page__title editorial-heading mt-4 text-3xl font-bold leading-tight sm:text-5xl">
+              <LocalizedText ne={article.headline} />
             </h1>
-            <p className="mt-4 max-w-4xl text-lg leading-8 text-[var(--ink-soft)]">
-              {article.summary}
+            <p className="article-page__summary mt-4 max-w-4xl text-lg leading-8 text-[var(--ink-soft)]">
+              <LocalizedText ne={article.summary ?? ""} />
             </p>
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2">
               <AuthorByline authors={article.authors} />
@@ -73,12 +74,10 @@ export default async function ArticlePage({ params }: Props) {
               <ArticleShare />
             </div>
           </header>
-          {article.leadMedia ? (
-            <div className="mt-6">
-              <ArticleMedia media={article.leadMedia} />
-            </div>
-          ) : null}
-          <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_15rem]">
+          <div className="mt-6">
+            {article.leadMedia ? <ArticleMedia media={article.leadMedia} /> : <MediaSlot />}
+          </div>
+          <div className="article-page__layout mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_15rem]">
             <div>
               {article.corrections.length ? (
                 <div className="mb-7">
@@ -90,13 +89,15 @@ export default async function ArticlePage({ params }: Props) {
               <ArticleBody blocks={article.body} />
               <SourceAttribution sources={article.sources} />
             </div>
-            <aside className="h-fit border-t-4 border-[var(--ink)] bg-[var(--paper-muted)] p-4">
-              <p className="eyebrow">सम्पादकीय जानकारी</p>
+            <aside className="article-page__sidebar h-fit border-t-4 border-[var(--ink)] bg-[var(--paper-muted)] p-4">
+              <p className="eyebrow">
+                <LocalizedText ne="सम्पादकीय जानकारी" />
+              </p>
               <p className="mt-2 text-sm leading-7">
-                यस पृष्ठका सबै विवरण काल्पनिक छन् र केवल वेबसाइटको पूर्वावलोकनका लागि राखिएका हुन्।
+                <LocalizedText ne="यस पृष्ठका सबै विवरण काल्पनिक छन् र केवल वेबसाइटको पूर्वावलोकनका लागि राखिएका हुन्।" />
               </p>
               <Link className="mt-3 inline-block text-sm font-bold" href="/information-hub">
-                सन्दर्भ केन्द्र →
+                <LocalizedText ne="सन्दर्भ केन्द्र →" />
               </Link>
             </aside>
           </div>

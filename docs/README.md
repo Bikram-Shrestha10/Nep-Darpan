@@ -12,6 +12,7 @@ These documents turn the supplied Stitch wireframe into an implementation-ready 
 - [System Design](architecture/SYSTEM_DESIGN.md) — architecture, service boundaries, reader and publishing flows, data domains, security boundaries, and trade-offs.
 - [Technical Requirements Document](engineering/TRD.md) — reference stack, application structure, schema, interfaces, security, search, rendering, operations, and technical acceptance.
 - [Frontend Content and API Contract](engineering/FRONTEND_CONTRACT.md) — typed frontend data shapes, mock-data boundary, localization, visibility rules, and page-to-data mapping.
+- [Newsroom and Admin Panel guide](admin/README.md) — current website functionality, newsroom prototype limits, target admin navigation/layout, role baseline, workflows, and acceptance checklist.
 - [Phased Implementation Plan](IMPLEMENTATION_PLAN.md) — frontend-first task sequence, backend/database follow-up, and required test, review, and verification gates for every task.
 
 ## Baseline assumptions

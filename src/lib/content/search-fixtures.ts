@@ -1,4 +1,5 @@
 import type { ArticleCard, SearchFilters, SearchPage, StoryKind } from "@/lib/content/contracts";
+import { translateToEnglish } from "@/lib/i18n/english";
 
 export const FIXTURE_SEARCH_PAGE_SIZE = 3;
 export const FIXTURE_QUERY_MAX_LENGTH = 120;
@@ -35,13 +36,26 @@ function kathmanduCalendarDate(value: string): string {
 
 function score(article: ArticleCard, terms: string[]): number {
   const headline = normalizeSearchText(article.headline);
+  const headlineEn = normalizeSearchText(translateToEnglish(article.headline));
   const summary = normalizeSearchText(article.summary ?? "");
+  const summaryEn = normalizeSearchText(translateToEnglish(article.summary ?? ""));
   const category = normalizeSearchText(article.category.name);
+  const categoryEn = normalizeSearchText(translateToEnglish(article.category.name));
   const authors = normalizeSearchText(article.authors.map((author) => author.name).join(" "));
+  const authorsEn = normalizeSearchText(
+    article.authors.map((author) => translateToEnglish(author.name)).join(" "),
+  );
   return terms.reduce((total, term) => {
-    if (headline.includes(term)) return total + 5;
-    if (summary.includes(term)) return total + 2;
-    if (category.includes(term) || authors.includes(term)) return total + 1;
+    if (headline.includes(term) || headlineEn.includes(term)) return total + 5;
+    if (summary.includes(term) || summaryEn.includes(term)) return total + 2;
+    if (
+      category.includes(term) ||
+      categoryEn.includes(term) ||
+      authors.includes(term) ||
+      authorsEn.includes(term)
+    ) {
+      return total + 1;
+    }
     return total;
   }, 0);
 }
@@ -65,17 +79,20 @@ export function searchFixtureStories(articles: ArticleCard[], filters: SearchFil
     if (filters.to && publishedDate > filters.to) return false;
     if (!hasFilters) return false;
     if (query.length > FIXTURE_QUERY_MAX_LENGTH || (query && !terms.length)) return false;
-    const indexed = normalizeSearchText(
-      [
-        article.headline,
-        article.summary,
-        article.category.name,
-        article.kind.replaceAll("_", " "),
-        ...article.authors.map((author) => author.name),
-      ]
-        .filter(Boolean)
-        .join(" "),
-    );
+    const originalFields = [
+      article.headline,
+      article.summary,
+      article.category.name,
+      article.kind.replaceAll("_", " "),
+      ...article.authors.map((author) => author.name),
+    ].filter((field): field is string => Boolean(field));
+    // The Nepali fixture edition has an English UI preview. Let readers search
+    // those preview translations without presenting them as a separate English edition.
+    const indexedFields =
+      filters.locale === "ne-NP"
+        ? [...originalFields, ...originalFields.map((field) => translateToEnglish(field))]
+        : originalFields;
+    const indexed = normalizeSearchText(indexedFields.join(" "));
     return terms.every((term) => indexed.includes(term));
   });
 

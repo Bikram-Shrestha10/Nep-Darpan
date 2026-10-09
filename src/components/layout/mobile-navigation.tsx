@@ -1,27 +1,33 @@
+"use client";
+
 import Link from "next/link";
 import { HomeIcon, HubIcon, LatestIcon, MenuIcon, SearchIcon } from "@/components/layout/icons";
+import { LocalizedText, useSitePreferences } from "@/components/layout/site-preferences";
 const items = [
-  { href: "/", label: "गृह", icon: HomeIcon },
-  { href: "/latest", label: "ताजा", icon: LatestIcon },
-  { href: "/information-hub", label: "जानकारी", icon: HubIcon },
-  { href: "/search", label: "खोज", icon: SearchIcon },
-  { href: "#site-footer", label: "थप", icon: MenuIcon },
+  { href: "/", ne: "गृह", en: "Home", icon: HomeIcon },
+  { href: "/latest", ne: "ताजा", en: "Latest", icon: LatestIcon },
+  { href: "/information-hub", ne: "जानकारी", en: "Info", icon: HubIcon },
+  { href: "/search", ne: "खोज", en: "Search", icon: SearchIcon },
+  { href: "#site-footer", ne: "थप", en: "More", icon: MenuIcon },
 ] as const;
 export function MobileNavigation() {
+  const { language } = useSitePreferences();
   return (
     <nav
-      aria-label="सानो पर्दाको छिटो नेभिगेसन"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--rule-strong)] bg-[var(--paper-raised)] md:hidden"
+      aria-label={language === "en" ? "Quick navigation" : "सानो पर्दाको छिटो नेभिगेसन"}
+      className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-[var(--ink)] bg-[var(--paper-raised)] md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
-        {items.map(({ href, label, icon: Icon }) => (
+        {items.map(({ href, ne, en, icon: Icon }) => (
           <li key={href}>
             <Link
-              className="flex min-h-[4.25rem] flex-col items-center justify-center gap-1 text-[0.7rem] font-bold no-underline"
+              className="flex min-h-[4.1rem] flex-col items-center justify-center gap-1 text-[0.68rem] font-bold no-underline hover:bg-[var(--paper-muted)]"
               href={href}
             >
               <Icon />
-              <span>{label}</span>
+              <span>
+                <LocalizedText ne={ne} en={en} />
+              </span>
             </Link>
           </li>
         ))}

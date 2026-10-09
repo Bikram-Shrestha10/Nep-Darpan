@@ -1,7 +1,7 @@
 # Nep Darpan — Frontend Content and API Contract
 
-Version: 1.0 candidate
-Date: 2026-10-06
+Version: 1.2 candidate
+Date: 2026-10-07
 Status: Frontend technical review passed; awaiting product/editorial owner sign-off before Phase 2 uses this as the frozen contract.
 
 ## 1. Purpose
@@ -12,7 +12,7 @@ All examples and fixture content must be clearly fictional. Dates are ISO 8601 U
 
 ## 2. Approved Phase 0 working decisions
 
-- Nepali is the default locale: `ne-NP`. English: `en`, is available only for a separately reviewed translation. If a translation does not exist, the interface clearly offers the available edition rather than implying translated content.
+- Nepali is the default interface language: `ne-NP`; readers can switch the complete interface and fixture preview to English: `en`. English translations of built-in fictional fixtures are for UI preview only and are not approved stories. Public English story content requires its own separately reviewed locale-specific version. If that version does not exist, explain the available edition rather than implying the source story is translated.
 - Every story requires editor approval before publication. Fact-check entries use a separate fact-check workflow. An editor may flag a high-risk explainer for fact-check review; the newsroom will define the high-risk criteria before backend workflow implementation.
 - The first frontend milestone includes home, categories, articles, search, explainers/guides/fact-checks, corrections, and newsroom prototypes. Newsletter signup and live market/weather data modules are deferred until provider, policy, and product decisions are approved.
 - Public reading is anonymous. Newsroom screens in the frontend milestone are prototypes using fixtures and are not secure or persistent until backend authentication and authorization are implemented.
@@ -64,7 +64,9 @@ export interface ImageMedia {
   kind: "image";
   src: string;
   alt: string;
+  altEn?: string;
   caption?: string;
+  captionEn?: string;
   credit?: string;
   width: number;
   height: number;
@@ -76,7 +78,9 @@ export interface VideoMedia {
   src: string;
   poster: ImageMedia;
   title: string;
+  titleEn?: string;
   caption?: string;
+  captionEn?: string;
   credit?: string;
   durationSeconds?: number;
   captionsUrl?: string;
@@ -108,6 +112,15 @@ export interface ArticleCard {
   labels: EditorialLabel[];
   leadMedia?: PublicMedia;
   hasCorrection: boolean;
+}
+
+export interface ReelCard {
+  id: string;
+  headline: string;
+  headlineEn?: string;
+  href: string;
+  category: CategorySummary;
+  media?: VideoMedia;
 }
 
 export type ArticleBodyBlock =
@@ -186,6 +199,7 @@ export interface HomePageData {
   lead?: ArticleCard;
   latest: ArticleCard[];
   trending: ArticleCard[];
+  reels: ReelCard[];
   sections: Array<{
     category: CategorySummary;
     lead?: ArticleCard;
@@ -236,6 +250,7 @@ The fixture adapter may implement simplified filtering, but it must return the s
 
 ## 5. Public visibility and localization rules
 
+- The global language control localizes interface copy, accessible labels, document language, and date/number presentation. It may show labeled English translations of fictional preview fixtures; those strings are not editorial records or publishable news.
 - Public article and hub methods return published content only. There is no public draft, preview, staff-note, unpublished-media, or role field in these shapes.
 - A published translation has its own locale and slug and links to the shared `storyGroupId`. Do not infer that a translation exists from a locale switcher option.
 - When no translation exists, route to an available edition or locale landing page and explain the fallback. Do not silently translate or set hreflang for missing translations.

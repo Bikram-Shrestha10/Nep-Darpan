@@ -1,5 +1,6 @@
 import type { ArticleBodyBlock } from "@/lib/content/contracts";
 import { ArticleMedia } from "@/components/content/article-media";
+import { LocalizedText } from "@/components/layout/site-preferences";
 
 export function ArticleBody({ blocks }: { blocks: ArticleBodyBlock[] }) {
   return (
@@ -8,12 +9,20 @@ export function ArticleBody({ blocks }: { blocks: ArticleBodyBlock[] }) {
         const key = `${block.type}-${index}`;
         switch (block.type) {
           case "paragraph":
-            return <p key={key}>{block.text}</p>;
+            return (
+              <p key={key}>
+                <LocalizedText ne={block.text} />
+              </p>
+            );
           case "heading":
             return block.level === 2 ? (
-              <h2 key={key}>{block.text}</h2>
+              <h2 key={key}>
+                <LocalizedText ne={block.text} />
+              </h2>
             ) : (
-              <h3 key={key}>{block.text}</h3>
+              <h3 key={key}>
+                <LocalizedText ne={block.text} />
+              </h3>
             );
           case "image":
           case "video":
@@ -21,8 +30,14 @@ export function ArticleBody({ blocks }: { blocks: ArticleBodyBlock[] }) {
           case "quote":
             return (
               <blockquote key={key}>
-                <p>{block.text}</p>
-                {block.attribution ? <cite>{block.attribution}</cite> : null}
+                <p>
+                  <LocalizedText ne={block.text} />
+                </p>
+                {block.attribution ? (
+                  <cite>
+                    <LocalizedText ne={block.attribution} />
+                  </cite>
+                ) : null}
               </blockquote>
             );
           case "list": {
@@ -30,7 +45,9 @@ export function ArticleBody({ blocks }: { blocks: ArticleBodyBlock[] }) {
             return (
               <List key={key}>
                 {block.items.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>
+                    <LocalizedText ne={item} />
+                  </li>
                 ))}
               </List>
             );
